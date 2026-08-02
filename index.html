@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>星辰语学院 · 德语词汇冒险</title>
+<style>
+:root {
+  --bg-deep: #0f0820;
+  --bg-mid: #1a0f2e;
+  --bg-card: #251744;
+  --bg-card-light: #322159;
+  --bg-card-hover: #3d2870;
+  --primary: #b794f4;
+  --primary-dark: #805ad5;
+  --primary-glow: rgba(183, 148, 244, 0.4);
+  --accent-pink: #f687b3;
+  --accent-rose: #ed64a6;
+  --gold: #f6e05e;
+  --gold-dark: #d69e2e;
+  --text: #f7fafc;
+  --text-dim: #cbd5e0;
+  --text-mute: #a78bca;
+  --danger: #fc8181;
+  --success: #68d391;
+  --love: #ed64a6;
+  --border: rgba(183, 148, 244, 0.25);
+  --border-strong: rgba(183, 148, 244, 0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top, #2d1b4e 0%, transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(237, 100, 166, 0.15) 0%, transparent 50%),
+    linear-gradient(180deg, #1a0f2e 0%, #0f0820 100%);
+  background-attachment: fixed;
+  padding-bottom: 100px;
+}
+
+/* 星空背景 */
+.stars-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 3s infinite ease-in-out;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 0.9; transform: scale(1.2); }
+}
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============ 顶部 Header ============ */
+.header {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-light) 100%);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 32px rgba(128, 90, 213, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+.title-block h1 {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--accent-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.5px;
+}
+.title-block .subtitle {
+  font-size: 12px;
+  color: var(--text-mute);
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(183, 148, 244, 0.12);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.icon-btn:hover { background: rgba(183, 148, 244, 0.25); transform: translateY(-1px); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* 玩家状态条 */
+.player-status {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.stat-chip {
+  background: rgba(15, 8, 32, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.stat-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stat-icon svg { width: 18px; height: 18px; }
+.stat-icon.level { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #2d1b4e; }
+.stat-icon.streak { background: linear-gradient(135deg, #f6ad55, #ed8936); color: #fff; }
+.stat-info { flex: 1; min-width: 0; }
+.stat-label { font-size: 11px; color: var(--text-mute); }
+.stat-value { font-size: 16px; font-weight: 700; color: var(--text); }
+.stat-value .small { font-size: 12px; color: var(--text-dim); font-weight: 400; }
+
+/* 经验条 */
+.exp-bar-wrap {
+  margin-top: 10px;
+  height: 8px;
+  background: rgba(15, 8, 32, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.exp-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--accent-pink) 100%);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+/* ============ 今天要处理 ============ */
+.today-section {
+  background: linear-gradient(135deg, rgba(237, 100, 166, 0.12) 0%, rgba(183, 148, 244, 0.12) 100%);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.section-title svg { width: 18px; height: 18px; color: var(--accent-pink); }
+.section-title .count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-mute);
+  font-weight: 400;
+}
+
+.today-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(37, 23, 68, 0.6);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--primary);
+  transition: all 0.2s;
+}
+.today-item.overdue { border-left-color: var(--danger); background: rgba(252, 129, 129, 0.08); }
+.today-item.done { opacity: 0.5; border-left-color: var(--success); }
+.today-item:last-child { margin-bottom: 0; }
+
+.today-item-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(183, 148, 244, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+.today-item.overdue .today-item-icon { background: rgba(252, 129, 129, 0.2); color: var(--danger); }
+.today-item.done .today-item-icon { background: rgba(104, 211, 145, 0.2); color: var(--success); }
+.today-item-icon svg { width: 18px; height: 18px; }
+
+.today-item-content { flex: 1; min-width: 0; }
+.today-item-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.today-item-desc { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
+.today-item.overdue .today-item-title { color: var(--danger); }
+.today-item.overdue .today-item-desc::before {
+  content: '逾期 · ';
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.today-item-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.today-item-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px var(--primary-glow); }
+.today-item.overdue .today-item-btn { background: linear-gradient(135deg, var(--danger), #e53e3e); }
+.today-item.done .today-item-btn { display: none; }
+
+.empty-hint {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-mute);
+  font-size: 13px;
+}
+
+/* ============ Tab 导航 ============ */
+.tab-nav {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px;
+  margin-bottom: 14px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-mute);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.tab-btn svg { width: 18px; height: 18px; }
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+/* ============ 卡片通用 ============ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* ============ 冒险模块 ============ */
+.adventure-intro {
+  text-align: center;
+  padding: 8px 0 18px;
+}
+.adventure-intro .scene-icon {
+  width: 80px; height: 80px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.adventure-intro .scene-icon svg { width: 44px; height: 44px; color: var(--gold); }
+.adventure-intro h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, var(--primary), var(--accent-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.adventure-intro p { font-size: 13px; color: var(--text-dim); }
+
+.word-queue {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.word-pip {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--bg-card-light);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-mute);
+  transition: all 0.3s;
+}
+.word-pip.active { border-color: var(--gold); background: rgba(246, 224, 94, 0.15); color: var(--gold); box-shadow: 0 0 16px rgba(246, 224, 94, 0.4); }
+.word-pip.done { background: rgba(104, 211, 145, 0.2); border-color: var(--success); color: var(--success); }
+.word-pip.fail { background: rgba(252, 129, 129, 0.15); border-color: var(--danger); color: var(--danger); }
+
+.big-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-rose) 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 6px 20px var(--primary-glow);
+  letter-spacing: 1px;
+}
+.big-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px var(--primary-glow); }
+.big-btn:active { transform: translateY(0); }
+.big-btn.secondary {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-strong);
+  box-shadow: none;
+  color: var(--text);
+}
+.big-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 答题界面 */
+.quiz-panel { display: none; }
+.quiz-panel.active { display: block; }
+
+.battle-scene {
+  background: linear-gradient(180deg, rgba(45, 27, 78, 0.8) 0%, rgba(15, 8, 32, 0.9) 100%);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.enemy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.enemy-info { flex: 1; }
+.enemy-name { font-size: 14px; font-weight: 700; color: var(--danger); }
+.enemy-hp-bar {
+  height: 8px;
+  background: rgba(15, 8, 32, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+}
+.enemy-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--danger), #e53e3e);
+  border-radius: 4px;
+  transition: width 0.4s;
+}
+.enemy-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(252, 129, 129, 0.3) 0%, transparent 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.enemy-avatar svg { width: 36px; height: 36px; color: var(--danger); }
+
+.player-hp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.player-hp-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(15, 8, 32, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.player-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success), #38a169);
+  border-radius: 4px;
+  transition: width 0.4s;
+}
+
+.spell-card {
+  background: linear-gradient(135deg, var(--bg-card-light) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 24px 18px;
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+}
+.spell-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, transparent, rgba(246, 224, 94, 0.08));
+  pointer-events: none;
+}
+.spell-prompt-label {
+  font-size: 11px;
+  color: var(--text-mute);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.spell-word {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 20px rgba(246, 224, 94, 0.4);
+}
+.spell-meta {
+  font-size: 12px;
+  color: var(--text-mute);
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.spell-meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.option-btn {
+  padding: 16px 12px;
+  border-radius: 12px;
+  background: var(--bg-card-light);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.option-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--bg-card-hover); transform: translateY(-1px); }
+.option-btn:disabled { cursor: default; }
+.option-btn.correct { border-color: var(--success); background: rgba(104, 211, 145, 0.2); color: var(--success); }
+.option-btn.wrong { border-color: var(--danger); background: rgba(252, 129, 129, 0.2); color: var(--danger); }
+
+/* 答题反馈 */
+.feedback-panel {
+  display: none;
+  text-align: center;
+  padding: 16px;
+  background: var(--bg-card-light);
+  border-radius: 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+.feedback-panel.show { display: block; animation: pop 0.4s; }
+@keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.feedback-icon { font-size: 28px; margin-bottom: 8px; }
+.feedback-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.feedback-title.win { color: var(--success); }
+.feedback-title.lose { color: var(--danger); }
+.feedback-detail { font-size: 13px; color: var(--text-dim); }
+.feedback-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  background: rgba(246, 224, 94, 0.15);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 600;
+}
+.feedback-reward.love { background: rgba(237, 100, 166, 0.15); color: var(--accent-pink); }
+
+/* 单词详情（学习新词时） */
+.word-detail {
+  background: var(--bg-card-light);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+.word-detail .dw-word {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.word-detail .dw-pron {
+  font-size: 14px;
+  color: var(--text-mute);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+.word-detail .dw-pos {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(183, 148, 244, 0.2);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+.word-detail .dw-trans {
+  font-size: 17px;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.word-detail .dw-example {
+  background: rgba(15, 8, 32, 0.5);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  border-left: 3px solid var(--accent-pink);
+}
+.word-detail .dw-example-de { color: var(--text); margin-bottom: 4px; }
+.word-detail .dw-example-zh { color: var(--text-mute); font-size: 13px; }
+
+.speak-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(183, 148, 244, 0.15);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--primary);
+  font-size: 12px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.speak-btn svg { width: 14px; height: 14px; }
+
+/* ============ 角色攻略模块 ============ */
+.character-stage {
+  background: linear-gradient(180deg, rgba(45, 27, 78, 0.6) 0%, rgba(237, 100, 166, 0.1) 100%);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.character-stage::before {
+  content: '';
+  position: absolute;
+  top: -30%; left: 50%;
+  transform: translateX(-50%);
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(237, 100, 166, 0.2) 0%, transparent 60%);
+  pointer-events: none;
+}
+.character-portrait {
+  width: 120px; height: 120px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg-card-light), var(--bg-card));
+  border: 3px solid var(--accent-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 30px rgba(237, 100, 166, 0.3);
+}
+.character-portrait svg { width: 70px; height: 70px; color: var(--accent-pink); }
+.character-portrait .mood-badge {
+  position: absolute;
+  bottom: -6px; right: -6px;
+  background: var(--bg-card);
+  border: 2px solid var(--bg-card);
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.character-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.character-title {
+  font-size: 12px;
+  color: var(--accent-pink);
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.affection-section {
+  margin: 16px 0;
+}
+.affection-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-mute);
+  margin-bottom: 6px;
+}
+.affection-label .hearts { color: var(--accent-pink); letter-spacing: 2px; }
+.affection-bar-wrap {
+  height: 12px;
+  background: rgba(15, 8, 32, 0.6);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.affection-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-rose), var(--accent-pink), var(--gold));
+  border-radius: 6px;
+  transition: width 0.6s;
+  box-shadow: 0 0 12px rgba(237, 100, 166, 0.5);
+}
+
+.character-dialogue {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 14px;
+  position: relative;
+}
+.character-dialogue .speaker {
+  font-size: 12px;
+  color: var(--accent-pink);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.character-dialogue .line {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.7;
+  font-style: italic;
+}
+.character-dialogue .line-de {
+  font-size: 13px;
+  color: var(--text-mute);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.scene-list { margin-top: 14px; }
+.scene-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(37, 23, 68, 0.5);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.scene-item:hover:not(.locked) { background: var(--bg-card-hover); border-color: var(--primary); }
+.scene-item.locked { opacity: 0.45; cursor: not-allowed; }
+.scene-item.unlocked { border-color: var(--accent-pink); }
+.scene-icon-sm {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(183, 148, 244, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+.scene-item.unlocked .scene-icon-sm { background: rgba(237, 100, 166, 0.2); color: var(--accent-pink); }
+.scene-item.locked .scene-icon-sm { background: rgba(15, 8, 32, 0.5); color: var(--text-mute); }
+.scene-icon-sm svg { width: 18px; height: 18px; }
+.scene-info { flex: 1; min-width: 0; }
+.scene-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.scene-req { font-size: 11px; color: var(--text-mute); margin-top: 2px; }
+
+/* ============ 词汇图鉴 ============ */
+.dex-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.dex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.dex-card {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.dex-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 6px 16px var(--primary-glow); }
+.dex-card.unseen { opacity: 0.6; }
+.dex-card .dw-word { font-size: 18px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+.dex-card .dw-trans { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+.dex-card .dw-mastery {
+  display: flex;
+  gap: 3px;
+}
+.mastery-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(15, 8, 32, 0.6);
+  border: 1px solid var(--border);
+}
+.mastery-dot.filled { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 6px var(--gold); }
+.dex-card .dw-pos-mini {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-size: 10px;
+  color: var(--text-mute);
+}
+
+.dex-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-mute);
+  font-size: 13px;
+}
+
+/* ============ 模态框 ============ */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+.modal-mask.show { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  padding: 22px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.modal h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.modal p { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.7; }
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.modal-actions button {
+  flex: 1;
+  padding: 11px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-cancel { background: var(--bg-card-light); color: var(--text-dim); border: 1px solid var(--border) !important; }
+.btn-confirm { background: linear-gradient(135deg, var(--danger), #e53e3e); color: #fff; }
+.btn-confirm.safe { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+.scene-modal-content {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+}
+.scene-modal-content .scene-de {
+  color: var(--accent-pink);
+  font-style: italic;
+  margin: 10px 0;
+  padding: 10px;
+  background: rgba(237, 100, 166, 0.08);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-pink);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 20px; left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  z-index: 200;
+  transition: transform 0.3s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  max-width: 90vw;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: var(--success); }
+.toast.error { border-color: var(--danger); }
+
+/* 数据备份提示 */
+.backup-hint {
+  background: rgba(246, 224, 94, 0.1);
+  border: 1px solid rgba(246, 224, 94, 0.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.backup-hint.show { display: flex; }
+.backup-hint svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* 移动端 */
+@media (max-width: 640px) {
+  body { font-size: 14px; }
+  .container { padding: 12px; }
+  .header { padding: 14px; }
+  .title-block h1 { font-size: 18px; }
+  .player-status { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-chip { padding: 8px 10px; }
+  .stat-value { font-size: 15px; }
+  .spell-word { font-size: 26px; }
+  .options-grid { grid-template-columns: 1fr; }
+  .dex-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .character-portrait { width: 100px; height: 100px; }
+  .character-portrait svg { width: 56px; height: 56px; }
+  .tab-btn { font-size: 12px; padding: 9px 4px; }
+}
+
+/* 底部留白给移动端 */
+.bottom-spacer { height: 20px; }
+</style>
+</head>
+<body>
+<div class="stars-bg" id="starsBg"></div>
+
+<div class="container">
+  <!-- ============ Header ============ -->
+  <div class="header">
+    <div class="header-top">
+      <div class="title-block">
+        <h1>星辰语学院</h1>
+        <div class="subtitle">Sternsprache Akademie · 德语词汇冒险</div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="exportBtn" title="导出备份">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="icon-btn" id="importBtn" title="导入恢复">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <button class="icon-btn" id="settingsBtn" title="设置">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="player-status">
+      <div class="stat-chip">
+        <div class="stat-icon level">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">冒险者等级</div>
+          <div class="stat-value">Lv.<span id="playerLevel">1</span> <span class="small" id="playerTitle">见习咒文士</span></div>
+        </div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-icon streak">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">连续打卡</div>
+          <div class="stat-value"><span id="streakDays">0</span> <span class="small">天</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="exp-bar-wrap"><div class="exp-bar" id="expBar" style="width:0%"></div></div>
+  </div>
+
+  <!-- 数据备份提示 -->
+  <div class="backup-hint" id="backupHint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span id="backupHintText"></span>
+  </div>
+
+  <!-- ============ 今天要处理 ============ -->
+  <div class="today-section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      今日任务板
+      <span class="count" id="todayCount"></span>
+    </div>
+    <div id="todayList"></div>
+  </div>
+
+  <!-- ============ Tab 导航 ============ -->
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="adventure">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      冒险
+    </button>
+    <button class="tab-btn" data-tab="character">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      攻略
+    </button>
+    <button class="tab-btn" data-tab="dex">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      图鉴
+    </button>
+  </div>
+
+  <!-- ============ 冒险面板 ============ -->
+  <div id="tab-adventure" class="tab-panel">
+    <div class="card" id="adventureCard">
+      <div class="adventure-intro" id="adventureIntro">
+        <div class="scene-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/><path d="M12 22V12"/><path d="M4 7l8 5 8-5"/></svg>
+        </div>
+        <h2 id="introTitle">今日星辰试炼</h2>
+        <p id="introDesc">完成今日单词挑战，获得经验与莱纳的好感度</p>
+        <div class="word-queue" id="wordQueue"></div>
+        <button class="big-btn" id="startBtn">开始冒险</button>
+      </div>
+
+      <div class="quiz-panel" id="quizPanel">
+        <div class="battle-scene">
+          <div class="enemy-row">
+            <div class="enemy-info">
+              <div class="enemy-name" id="enemyName">暗影语兽</div>
+              <div class="enemy-hp-bar"><div class="enemy-hp-fill" id="enemyHpFill" style="width:100%"></div></div>
+            </div>
+            <div class="enemy-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            </div>
+          </div>
+          <div class="player-hp-row">
+            <span>HP</span>
+            <div class="player-hp-bar"><div class="player-hp-fill" id="playerHpFill" style="width:100%"></div></div>
+            <span id="playerHpText">100</span>
+          </div>
+        </div>
+
+        <div id="learnStage" style="display:none">
+          <div class="word-detail" id="wordDetail"></div>
+          <button class="big-btn" id="memorizedBtn">已记住，开始咏唱</button>
+        </div>
+
+        <div id="quizStage" style="display:none">
+          <div class="spell-card">
+            <div class="spell-prompt-label" id="quizPromptLabel">选择正确的含义</div>
+            <div class="spell-word" id="quizWord">Liebe</div>
+            <div class="spell-meta" id="quizMeta"></div>
+          </div>
+          <div class="options-grid" id="optionsGrid"></div>
+          <div class="feedback-panel" id="feedbackPanel"></div>
+          <button class="big-btn" id="nextBtn" style="display:none">下一题</button>
+        </div>
+      </div>
+
+      <div id="resultStage" style="display:none">
+        <div class="adventure-intro">
+          <div class="scene-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h2 id="resultTitle">试炼完成</h2>
+          <p id="resultDesc"></p>
+          <div id="resultRewards" style="margin:14px 0"></div>
+          <button class="big-btn" id="finishBtn">返回</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 角色攻略面板 ============ -->
+  <div id="tab-character" class="tab-panel" style="display:none">
+    <div class="card">
+      <div class="character-stage">
+        <div class="character-portrait">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/><path d="M12 4l1.5 2.5h-3z" fill="currentColor"/></svg>
+          <div class="mood-badge" id="moodBadge"></div>
+        </div>
+        <div class="character-name">莱纳·冯·施特恩</div>
+        <div class="character-title" id="charTitle">陌生骑士</div>
+
+        <div class="affection-section">
+          <div class="affection-label">
+            <span>好感度</span>
+            <span><span class="hearts" id="hearts">♡♡♡♡♡</span> <span id="affectionNum">0</span></span>
+          </div>
+          <div class="affection-bar-wrap"><div class="affection-bar" id="affectionBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="character-dialogue" id="charDialogue">
+          <div class="speaker">莱纳</div>
+          <div class="line" id="dialogueLine">...你是被星辰召唤而来的旅人吗？</div>
+          <div class="line-de" id="dialogueDe">...Bist du der Reisende, der von den Sternen gerufen wurde?</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:18px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        剧情回廊
+        <span class="count" id="sceneCount"></span>
+      </div>
+      <div class="scene-list" id="sceneList"></div>
+    </div>
+  </div>
+
+  <!-- ============ 词汇图鉴面板 ============ -->
+  <div id="tab-dex" class="tab-panel" style="display:none">
+    <div class="card">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        词汇图鉴
+        <span class="count" id="dexCount"></span>
+      </div>
+      <div class="dex-toolbar">
+        <button class="filter-chip active" data-filter="all">全部</button>
+        <button class="filter-chip" data-filter="0">初见</button>
+        <button class="filter-chip" data-filter="1">熟悉</button>
+        <button class="filter-chip" data-filter="2">精通</button>
+      </div>
+      <div class="dex-grid" id="dexGrid"></div>
+    </div>
+  </div>
+
+  <div class="bottom-spacer"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- 设置模态框 -->
+<div class="modal-mask" id="settingsModal">
+  <div class="modal">
+    <h3>设置</h3>
+    <p>每日目标单词数：当前 <strong id="dailyGoalShow">3</strong> 个</p>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="filter-chip" data-goal="3">3 个</button>
+      <button class="filter-chip" data-goal="5">5 个</button>
+      <button class="filter-chip" data-goal="7">7 个</button>
+    </div>
+    <p style="color:var(--danger);font-size:12px">危险区域：</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="clearSamplesBtn">清空示例数据</button>
+      <button class="btn-confirm" id="clearAllBtn">清空全部数据</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="closeSettingsBtn">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 剧情模态框 -->
+<div class="modal-mask" id="sceneModal">
+  <div class="modal">
+    <h3 id="sceneModalTitle"></h3>
+    <div class="scene-modal-content" id="sceneModalContent"></div>
+    <div class="modal-actions">
+      <button class="btn-confirm safe" id="closeSceneBtn">铭记于心</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="importFile" accept=".json" style="display:none">
+
+<script>
+// ============ 数据层 ============
+const STORAGE_KEY = 'wb_german_vocab_v1';
+const today = () => new Date().toISOString().slice(0,10);
+
+// 预置词库（适合用户水平，从她已会的词扩展）
+const WORD_BANK = [
+  // === 故事核心词（贴合乙女/JRPG主题） ===
+  { id:'w1', german:'Liebe', pron:'[ˈliːbə]', pos:'die 名词', trans:'爱', example:'Ich liebe dich.', exampleTrans:'我爱你。' },
+  { id:'w2', german:'möchte', pron:'[ˈmœçtə]', pos:'动词', trans:'想要（礼貌）', example:'Ich möchte einen Kaffee.', exampleTrans:'我想要一杯咖啡。' },
+  { id:'w3', german:'Spiel', pron:'[ʃpiːl]', pos:'das 名词', trans:'游戏；演出', example:'Ich will das Spiel sehen.', exampleTrans:'我想看这场比赛。' },
+  { id:'w4', german:'sehen', pron:'[ˈzeːən]', pos:'动词', trans:'看见', example:'Ich sehe die Sterne.', exampleTrans:'我看见星星。' },
+  { id:'w5', german:'Ritter', pron:'[ˈʁɪtɐ]', pos:'der 名词', trans:'骑士', example:'Der Ritter beschützt die Stadt.', exampleTrans:'骑士守护着城市。' },
+  { id:'w6', german:'Stern', pron:'[ʃtɛʁn]', pos:'der 名词', trans:'星星', example:'Der Stern leuchtet hell.', exampleTrans:'星星明亮地闪耀。' },
+  { id:'w7', german:'lesen', pron:'[ˈleːzn̩]', pos:'动词', trans:'阅读', example:'Ich lese ein Buch.', exampleTrans:'我在读一本书。' },
+  { id:'w8', german:'schön', pron:'[ʃøːn]', pos:'形容词', trans:'美丽的', example:'Du bist sehr schön.', exampleTrans:'你很美。' },
+  { id:'w9', german:'Träume', pron:'[ˈtʁɔɪ̯mə]', pos:'die 名词', trans:'梦（复数）', example:'Träume können wahr werden.', exampleTrans:'梦想可以成真。' },
+  { id:'w10', german:'Herz', pron:'[hɛʁts]', pos:'das 名词', trans:'心；心脏', example:'Mein Herz gehört dir.', exampleTrans:'我的心属于你。' },
+  { id:'w11', german:'gehen', pron:'[ˈɡeːən]', pos:'动词', trans:'走；去', example:'Wir gehen zusammen.', exampleTrans:'我们一起走。' },
+  { id:'w12', german:'Magie', pron:'[maˈɡiː]', pos:'die 名词', trans:'魔法', example:'Die Magie der Worte.', exampleTrans:'语言的魔法。' },
+  { id:'w13', german:'Nacht', pron:'[naxt]', pos:'die 名词', trans:'夜晚', example:'Gute Nacht, mein Freund.', exampleTrans:'晚安，我的朋友。' },
+  { id:'w14', german:'sprechen', pron:'[ˈʃpʁɛçn̩]', pos:'动词', trans:'说话', example:'Sprichst du Deutsch?', exampleTrans:'你说德语吗？' },
+  { id:'w15', german:'Freund', pron:'[fʁɔɪ̯nt]', pos:'der 名词', trans:'朋友', example:'Du bist mein bester Freund.', exampleTrans:'你是我最好的朋友。' },
+  // === 问候与礼貌 ===
+  { id:'w16', german:'Hallo', pron:'[ˈhalo]', pos:'感叹词', trans:'你好', example:'Hallo, wie geht es dir?', exampleTrans:'你好，你怎么样？' },
+  { id:'w17', german:'Tschüss', pron:'[tʃʏs]', pos:'感叹词', trans:'再见', example:'Tschüss, bis morgen!', exampleTrans:'再见，明天见！' },
+  { id:'w18', german:'Danke', pron:'[ˈdaŋkə]', pos:'感叹词', trans:'谢谢', example:'Danke für deine Hilfe.', exampleTrans:'谢谢你的帮助。' },
+  { id:'w19', german:'Bitte', pron:'[ˈbɪtə]', pos:'感叹词', trans:'请；不客气', example:'Bitte, hier ist dein Buch.', exampleTrans:'不客气，这是你的书。' },
+  { id:'w20', german:'Ja', pron:'[jaː]', pos:'副词', trans:'是的', example:'Ja, ich verstehe.', exampleTrans:'是的，我明白。' },
+  { id:'w21', german:'Nein', pron:'[naɪ̯n]', pos:'副词', trans:'不', example:'Nein, danke.', exampleTrans:'不了，谢谢。' },
+  { id:'w22', german:'Entschuldigung', pron:'[ɛntˈʃʊldɪɡʊŋ]', pos:'die 名词', trans:'抱歉；打扰一下', example:'Entschuldigung, wo ist der Bahnhof?', exampleTrans:'打扰一下，火车站在哪？' },
+  { id:'w23', german:'Willkommen', pron:'[ˈvɪlkɔmən]', pos:'形容词', trans:'欢迎', example:'Willkommen zu Hause!', exampleTrans:'欢迎回家！' },
+  { id:'w24', german:'Guten Morgen', pron:'[ˈɡuːtn̩ ˈmɔʁɡn̩]', pos:'短语', trans:'早上好', example:'Guten Morgen, hast du gut geschlafen?', exampleTrans:'早上好，你睡得好吗？' },
+  { id:'w25', german:'Guten Abend', pron:'[ˈɡuːtn̩ ˈaːbn̩t]', pos:'短语', trans:'晚上好', example:'Guten Abend, schön dich zu sehen.', exampleTrans:'晚上好，很高兴见到你。' },
+  // === 人称与家庭 ===
+  { id:'w26', german:'ich', pron:'[ɪç]', pos:'代词', trans:'我', example:'Ich lerne Deutsch.', exampleTrans:'我在学德语。' },
+  { id:'w27', german:'du', pron:'[duː]', pos:'代词', trans:'你', example:'Du bist sehr nett.', exampleTrans:'你很友善。' },
+  { id:'w28', german:'er', pron:'[eːɐ̯]', pos:'代词', trans:'他', example:'Er heißt Max.', exampleTrans:'他叫Max。' },
+  { id:'w29', german:'sie', pron:'[ziː]', pos:'代词', trans:'她；他们', example:'Sie ist meine Schwester.', exampleTrans:'她是我姐妹。' },
+  { id:'w30', german:'wir', pron:'[viːɐ̯]', pos:'代词', trans:'我们', example:'Wir sind ein Team.', exampleTrans:'我们是一个团队。' },
+  { id:'w31', german:'Mutter', pron:'[ˈmʊtɐ]', pos:'die 名词', trans:'母亲', example:'Meine Mutter kocht gerne.', exampleTrans:'我妈妈喜欢做饭。' },
+  { id:'w32', german:'Vater', pron:'[ˈfaːtɐ]', pos:'der 名词', trans:'父亲', example:'Mein Vater arbeitet viel.', exampleTrans:'我爸爸工作很多。' },
+  { id:'w33', german:'Bruder', pron:'[ˈbʁuːdɐ]', pos:'der 名词', trans:'兄弟', example:'Mein Bruder ist älter als ich.', exampleTrans:'我哥哥比我大。' },
+  { id:'w34', german:'Schwester', pron:'[ˈʃvɛstɐ]', pos:'die 名词', trans:'姐妹', example:'Meine Schwester studiert Medizin.', exampleTrans:'我姐妹学医。' },
+  { id:'w35', german:'Kind', pron:'[kɪnt]', pos:'das 名词', trans:'孩子', example:'Das Kind spielt im Park.', exampleTrans:'孩子在公园玩。' },
+  { id:'w36', german:'Freundin', pron:'[ˈfʁɔɪ̯ndɪn]', pos:'die 名词', trans:'女性朋友；女友', example:'Sie ist meine beste Freundin.', exampleTrans:'她是我最好的朋友。' },
+  { id:'w37', german:'Mann', pron:'[man]', pos:'der 名词', trans:'男人；丈夫', example:'Er ist ein guter Mann.', exampleTrans:'他是个好男人。' },
+  { id:'w38', german:'Frau', pron:'[fʁaʊ̯]', pos:'die 名词', trans:'女人；女士', example:'Die Frau liest eine Zeitung.', exampleTrans:'那位女士在读报。' },
+  { id:'w39', german:'Familie', pron:'[faˈmiːli̯ə]', pos:'die 名词', trans:'家庭', example:'Meine Familie ist sehr wichtig für mich.', exampleTrans:'我的家庭对我很重要。' },
+  { id:'w40', german:'Name', pron:'[ˈnaːmə]', pos:'der 名词', trans:'名字', example:'Wie ist dein Name?', exampleTrans:'你叫什么名字？' },
+  { id:'w41', german:'Leute', pron:'[ˈlɔɪ̯tə]', pos:'die 名词', trans:'人们', example:'Die Leute hier sind freundlich.', exampleTrans:'这里的人很友善。' },
+  // === 数字 ===
+  { id:'w42', german:'eins', pron:'[aɪ̯ns]', pos:'数词', trans:'一', example:'Ich habe eins Katze.', exampleTrans:'我有一只猫。' },
+  { id:'w43', german:'zwei', pron:'[tsvaɪ̯]', pos:'数词', trans:'二', example:'Ich habe zwei Brüder.', exampleTrans:'我有两个兄弟。' },
+  { id:'w44', german:'drei', pron:'[dʁaɪ̯]', pos:'数词', trans:'三', example:'Drei Freunde gehen ins Kino.', exampleTrans:'三个朋友去看电影。' },
+  { id:'w45', german:'vier', pron:'[fiːɐ̯]', pos:'数词', trans:'四', example:'Wir haben vier Seasons.', exampleTrans:'我们有四季。' },
+  { id:'w46', german:'fünf', pron:'[fʏnf]', pos:'数词', trans:'五', example:'Ich arbeite fünf Tage.', exampleTrans:'我工作五天。' },
+  { id:'w47', german:'zehn', pron:'[tseːn]', pos:'数词', trans:'十', example:'Zehn Minuten warten.', exampleTrans:'等十分钟。' },
+  { id:'w48', german:'hundert', pron:'[ˈhʊndɐt]', pos:'数词', trans:'一百', example:'Das kostet hundert Euro.', exampleTrans:'这个一百欧元。' },
+  { id:'w49', german:'tausend', pron:'[ˈtaʊ̯zn̩t]', pos:'数词', trans:'一千', example:'Tausend Dank!', exampleTrans:'万分感谢！' },
+  { id:'w50', german:'erste', pron:'[ˈeːɐ̯stə]', pos:'序数词', trans:'第一', example:'Heute ist der erste Mai.', exampleTrans:'今天是五月一日。' },
+  { id:'w51', german:'letzte', pron:'[ˈlɛtstə]', pos:'序数词', trans:'最后的', example:'Das ist der letzte Tag.', exampleTrans:'这是最后一天。' },
+  // === 时间与日期 ===
+  { id:'w52', german:'heute', pron:'[ˈhɔɪ̯tə]', pos:'副词', trans:'今天', example:'Heute habe ich Zeit.', exampleTrans:'我今天有空。' },
+  { id:'w53', german:'morgen', pron:'[ˈmɔʁɡn̩]', pos:'副词', trans:'明天', example:'Morgen gehe ich arbeiten.', exampleTrans:'明天我去上班。' },
+  { id:'w54', german:'gestern', pron:'[ˈɡɛstɐn]', pos:'副词', trans:'昨天', example:'Gestern habe ich ihn gesehen.', exampleTrans:'昨天我看见他了。' },
+  { id:'w55', german:'Tag', pron:'[taːk]', pos:'der 名词', trans:'天；白天', example:'Was für ein schöner Tag!', exampleTrans:'多美的一天！' },
+  { id:'w56', german:'Woche', pron:'[ˈvɔçə]', pos:'die 名词', trans:'周', example:'Diese Woche bin ich beschäftigt.', exampleTrans:'这周我很忙。' },
+  { id:'w57', german:'Monat', pron:'[ˈmoːnat]', pos:'der 名词', trans:'月', example:'Ein Monat hat dreißig Tage.', exampleTrans:'一个月有三十天。' },
+  { id:'w58', german:'Jahr', pron:'[jaːɐ̯]', pos:'das 名词', trans:'年', example:'Ich lerne seit einem Jahr Deutsch.', exampleTrans:'我学德语一年了。' },
+  { id:'w59', german:'Stunde', pron:'[ˈʃtʊndə]', pos:'die 名词', trans:'小时', example:'Ich warte eine Stunde.', exampleTrans:'我等了一小时。' },
+  { id:'w60', german:'Minute', pron:'[miˈnuːtə]', pos:'die 名词', trans:'分钟', example:'Noch fünf Minuten.', exampleTrans:'还有五分钟。' },
+  { id:'w61', german:'Zeit', pron:'[tsaɪ̯t]', pos:'die 名词', trans:'时间', example:'Hast du Zeit heute Abend?', exampleTrans:'你今晚有空吗？' },
+  // === 食物与饮料 ===
+  { id:'w62', german:'Wasser', pron:'[ˈvasɐ]', pos:'das 名词', trans:'水', example:'Ich trinke viel Wasser.', exampleTrans:'我喝很多水。' },
+  { id:'w63', german:'Brot', pron:'[bʁoːt]', pos:'das 名词', trans:'面包', example:'Ich esse Brot zum Frühstück.', exampleTrans:'我早餐吃面包。' },
+  { id:'w64', german:'Milch', pron:'[mɪlç]', pos:'die 名词', trans:'牛奶', example:'Die Milch ist kalt.', exampleTrans:'牛奶是凉的。' },
+  { id:'w65', german:'Kaffee', pron:'[ˈkafeː]', pos:'der 名词', trans:'咖啡', example:'Ein Kaffee, bitte.', exampleTrans:'请来一杯咖啡。' },
+  { id:'w66', german:'Tee', pron:'[teː]', pos:'der 名词', trans:'茶', example:'Ich trinke gerne Tee.', exampleTrans:'我喜欢喝茶。' },
+  { id:'w67', german:'Apfel', pron:'[ˈapfl̩]', pos:'der 名词', trans:'苹果', example:'Der Apfel ist süß.', exampleTrans:'苹果是甜的。' },
+  { id:'w68', german:'Fleisch', pron:'[flaɪ̯ʃ]', pos:'das 名词', trans:'肉', example:'Ich esse kein Fleisch.', exampleTrans:'我不吃肉。' },
+  { id:'w69', german:'Fisch', pron:'[fɪʃ]', pos:'der 名词', trans:'鱼', example:'Der Fisch ist frisch.', exampleTrans:'鱼很新鲜。' },
+  { id:'w70', german:'Ei', pron:'[aɪ̯]', pos:'das 名词', trans:'鸡蛋', example:'Ich esse zwei Eier.', exampleTrans:'我吃两个鸡蛋。' },
+  { id:'w71', german:'Käse', pron:'[ˈkɛːzə]', pos:'der 名词', trans:'奶酪', example:'Ich mag Käse.', exampleTrans:'我喜欢奶酪。' },
+  { id:'w72', german:'Obst', pron:'[oːpst]', pos:'das 名词', trans:'水果', example:'Obst ist gesund.', exampleTrans:'水果很健康。' },
+  { id:'w73', german:'Gemüse', pron:'[ɡəˈmyːzə]', pos:'das 名词', trans:'蔬菜', example:'Ich kaufe frisches Gemüse.', exampleTrans:'我买新鲜蔬菜。' },
+  { id:'w74', german:'Salz', pron:'[zalt͡s]', pos:'das 名词', trans:'盐', example:'Das Salz ist im Küchenschrank.', exampleTrans:'盐在厨房柜子里。' },
+  { id:'w75', german:'Zucker', pron:'[ˈtsʊkɐ]', pos:'der 名词', trans:'糖', example:'Nimmst du Zucker im Kaffee?', exampleTrans:'你咖啡加糖吗？' },
+  { id:'w76', german:'Frühstück', pron:'[ˈfʁyːʃtʏk]', pos:'das 名词', trans:'早餐', example:'Zum Frühstück esse ich Brot.', exampleTrans:'早餐我吃面包。' },
+  { id:'w77', german:'Abendessen', pron:'[ˈaːbn̩tˌʔɛsn̩]', pos:'das 名词', trans:'晚餐', example:'Das Abendessen war lecker.', exampleTrans:'晚餐很美味。' },
+  // === 颜色 ===
+  { id:'w78', german:'rot', pron:'[ʁoːt]', pos:'形容词', trans:'红色的', example:'Die Rose ist rot.', exampleTrans:'玫瑰是红色的。' },
+  { id:'w79', german:'blau', pron:'[blaʊ̯]', pos:'形容词', trans:'蓝色的', example:'Der Himmel ist blau.', exampleTrans:'天空是蓝色的。' },
+  { id:'w80', german:'grün', pron:'[ɡʁyːn]', pos:'形容词', trans:'绿色的', example:'Das Gras ist grün.', exampleTrans:'草是绿色的。' },
+  { id:'w81', german:'gelb', pron:'[ɡɛlp]', pos:'形容词', trans:'黄色的', example:'Die Sonne ist gelb.', exampleTrans:'太阳是黄色的。' },
+  { id:'w82', german:'schwarz', pron:'[ʃvaʁt͡s]', pos:'形容词', trans:'黑色的', example:'Meine Katze ist schwarz.', exampleTrans:'我的猫是黑色的。' },
+  { id:'w83', german:'weiß', pron:'[vaɪ̯s]', pos:'形容词', trans:'白色的', example:'Die Wolken sind weiß.', exampleTrans:'云是白色的。' },
+  { id:'w84', german:'braun', pron:'[bʁaʊ̯n]', pos:'形容词', trans:'棕色的', example:'Seine Haare sind braun.', exampleTrans:'他的头发是棕色的。' },
+  { id:'w85', german:'grau', pron:'[ɡʁaʊ̯]', pos:'形容词', trans:'灰色的', example:'Der Himmel ist heute grau.', exampleTrans:'今天天空灰蒙蒙的。' },
+  { id:'w86', german:'Farbe', pron:'[ˈfaʁbə]', pos:'die 名词', trans:'颜色', example:'Welche Farbe magst du?', exampleTrans:'你喜欢什么颜色？' },
+  { id:'w87', german:'bunt', pron:'[bʊnt]', pos:'形容词', trans:'彩色的', example:'Der Garten ist bunt.', exampleTrans:'花园五颜六色。' },
+  // === 常用动词 ===
+  { id:'w88', german:'sein', pron:'[zaɪ̯n]', pos:'动词', trans:'是', example:'Ich bin müde.', exampleTrans:'我累了。' },
+  { id:'w89', german:'haben', pron:'[ˈhaːbn̩]', pos:'动词', trans:'有', example:'Ich habe eine Frage.', exampleTrans:'我有个问题。' },
+  { id:'w90', german:'machen', pron:'[ˈmaxn̩]', pos:'动词', trans:'做', example:'Was machst du heute?', exampleTrans:'你今天做什么？' },
+  { id:'w91', german:'kommen', pron:'[ˈkɔmən]', pos:'动词', trans:'来', example:'Komm bitte her!', exampleTrans:'请过来！' },
+  { id:'w92', german:'hören', pron:'[ˈhøːʁən]', pos:'动词', trans:'听', example:'Ich höre Musik.', exampleTrans:'我在听音乐。' },
+  { id:'w93', german:'essen', pron:'[ˈɛsn̩]', pos:'动词', trans:'吃', example:'Wir essen zusammen.', exampleTrans:'我们一起吃。' },
+  { id:'w94', german:'trinken', pron:'[ˈtʁɪŋkn̩]', pos:'动词', trans:'喝', example:'Sie trinkt einen Saft.', exampleTrans:'她喝果汁。' },
+  { id:'w95', german:'schlafen', pron:'[ˈʃlaːfn̩]', pos:'动词', trans:'睡觉', example:'Ich muss schlafen.', exampleTrans:'我得睡觉了。' },
+  { id:'w96', german:'arbeiten', pron:'[ˈaʁbaɪ̯tn̩]', pos:'动词', trans:'工作', example:'Ich arbeite im Büro.', exampleTrans:'我在办公室工作。' },
+  { id:'w97', german:'lernen', pron:'[ˈlɛʁnən]', pos:'动词', trans:'学习', example:'Ich lerne jeden Tag.', exampleTrans:'我每天学习。' },
+  { id:'w98', german:'schreiben', pron:'[ˈʃʁaɪ̯bn̩]', pos:'动词', trans:'写', example:'Ich schreibe eine E-Mail.', exampleTrans:'我写一封邮件。' },
+  { id:'w99', german:'kaufen', pron:'[ˈkaʊ̯fn̩]', pos:'动词', trans:'买', example:'Ich kaufe ein Geschenk.', exampleTrans:'我买个礼物。' },
+  { id:'w100', german:'spielen', pron:'[ˈʃpiːlən]', pos:'动词', trans:'玩；演奏', example:'Die Kinder spielen Fußball.', exampleTrans:'孩子们踢足球。' },
+  { id:'w101', german:'lieben', pron:'[ˈliːbn̩]', pos:'动词', trans:'爱', example:'Ich liebe dich.', exampleTrans:'我爱你。' },
+  { id:'w102', german:'wohnen', pron:'[ˈvoːnən]', pos:'动词', trans:'居住', example:'Ich wohne in Berlin.', exampleTrans:'我住在柏林。' },
+  { id:'w103', german:'heißen', pron:'[ˈhaɪ̯sn̩]', pos:'动词', trans:'名叫', example:'Wie heißt du?', exampleTrans:'你叫什么？' },
+  { id:'w104', german:'wollen', pron:'[ˈvɔlən]', pos:'动词', trans:'想要', example:'Ich will nach Hause.', exampleTrans:'我想回家。' },
+  { id:'w105', german:'können', pron:'[ˈkœnən]', pos:'动词', trans:'能；会', example:'Ich kann schwimmen.', exampleTrans:'我会游泳。' },
+  { id:'w106', german:'müssen', pron:'[ˈmʏsn̩]', pos:'动词', trans:'必须', example:'Ich muss jetzt gehen.', exampleTrans:'我得走了。' },
+  { id:'w107', german:'dürfen', pron:'[ˈdʏʁfn̩]', pos:'动词', trans:'允许', example:'Darf ich kommen?', exampleTrans:'我可以来吗？' },
+  { id:'w108', german:'geben', pron:'[ˈɡeːbn̩]', pos:'动词', trans:'给', example:'Ich gebe dir das Buch.', exampleTrans:'我把书给你。' },
+  { id:'w109', german:'nehmen', pron:'[ˈneːmən]', pos:'动词', trans:'拿', example:'Ich nehme einen Kaffee.', exampleTrans:'我要一杯咖啡。' },
+  { id:'w110', german:'finden', pron:'[ˈfɪndn̩]', pos:'动词', trans:'找到；觉得', example:'Ich finde das toll.', exampleTrans:'我觉得这个很棒。' },
+  { id:'w111', german:'wissen', pron:'[ˈvɪsn̩]', pos:'动词', trans:'知道', example:'Ich weiß die Antwort.', exampleTrans:'我知道答案。' },
+  { id:'w112', german:'verstehen', pron:'[fɛɐ̯ˈʃteːən]', pos:'动词', trans:'理解', example:'Ich verstehe dich.', exampleTrans:'我理解你。' },
+  { id:'w113', german:'denken', pron:'[ˈdɛŋkn̩]', pos:'动词', trans:'想；思考', example:'Ich denke an dich.', exampleTrans:'我在想你。' },
+  { id:'w114', german:'glauben', pron:'[ˈɡlaʊ̯bn̩]', pos:'动词', trans:'相信', example:'Ich glaube dir.', exampleTrans:'我相信你。' },
+  { id:'w115', german:'warten', pron:'[ˈvaʁtn̩]', pos:'动词', trans:'等待', example:'Ich warte auf dich.', exampleTrans:'我在等你。' },
+  // === 形容词 ===
+  { id:'w116', german:'gut', pron:'[ɡuːt]', pos:'形容词', trans:'好的', example:'Das Essen ist gut.', exampleTrans:'饭菜很好。' },
+  { id:'w117', german:'schlecht', pron:'[ʃlɛçt]', pos:'形容词', trans:'坏的；差的', example:'Das Wetter ist schlecht.', exampleTrans:'天气很差。' },
+  { id:'w118', german:'groß', pron:'[ɡʁoːs]', pos:'形容词', trans:'大的', example:'Das Haus ist groß.', exampleTrans:'房子很大。' },
+  { id:'w119', german:'klein', pron:'[klaɪ̯n]', pos:'形容词', trans:'小的', example:'Die Katze ist klein.', exampleTrans:'猫很小。' },
+  { id:'w120', german:'neu', pron:'[nɔɪ̯]', pos:'形容词', trans:'新的', example:'Das ist mein neues Auto.', exampleTrans:'这是我的新车。' },
+  { id:'w121', german:'alt', pron:'[alt]', pos:'形容词', trans:'老的；旧的', example:'Dieses Buch ist alt.', exampleTrans:'这本书很旧。' },
+  { id:'w122', german:'jung', pron:'[jʊŋ]', pos:'形容词', trans:'年轻的', example:'Sie ist noch jung.', exampleTrans:'她还年轻。' },
+  { id:'w123', german:'lang', pron:'[laŋ]', pos:'形容词', trans:'长的', example:'Der Film ist lang.', exampleTrans:'电影很长。' },
+  { id:'w124', german:'kurz', pron:'[kʊʁt͡s]', pos:'形容词', trans:'短的', example:'Der Weg ist kurz.', exampleTrans:'路很短。' },
+  { id:'w125', german:'schwer', pron:'[ʃveːɐ̯]', pos:'形容词', trans:'重的；难的', example:'Die Prüfung war schwer.', exampleTrans:'考试很难。' },
+  { id:'w126', german:'leicht', pron:'[laɪ̯çt]', pos:'形容词', trans:'轻的；容易的', example:'Das ist leicht.', exampleTrans:'这很简单。' },
+  { id:'w127', german:'teuer', pron:'[ˈtɔɪ̯ɐ]', pos:'形容词', trans:'贵的', example:'Das Auto ist teuer.', exampleTrans:'车很贵。' },
+  { id:'w128', german:'billig', pron:'[ˈbɪlɪç]', pos:'形容词', trans:'便宜的', example:'Das ist billig.', exampleTrans:'这很便宜。' },
+  { id:'w129', german:'heiß', pron:'[haɪ̯s]', pos:'形容词', trans:'热的', example:'Der Kaffee ist heiß.', exampleTrans:'咖啡很烫。' },
+  { id:'w130', german:'kalt', pron:'[kalt]', pos:'形容词', trans:'冷的', example:'Das Wasser ist kalt.', exampleTrans:'水很凉。' },
+  { id:'w131', german:'glücklich', pron:'[ˈɡlʏklɪç]', pos:'形容词', trans:'幸福的', example:'Ich bin glücklich.', exampleTrans:'我很幸福。' },
+  { id:'w132', german:'traurig', pron:'[ˈtʁaʊ̯ʁɪç]', pos:'形容词', trans:'悲伤的', example:'Warum bist du traurig?', exampleTrans:'你为什么难过？' },
+  { id:'w133', german:'müde', pron:'[ˈmyːdə]', pos:'形容词', trans:'累的', example:'Ich bin sehr müde.', exampleTrans:'我很累。' },
+  // === 身体与健康 ===
+  { id:'w134', german:'Kopf', pron:'[kɔpf]', pos:'der 名词', trans:'头', example:'Mein Kopf tut weh.', exampleTrans:'我头疼。' },
+  { id:'w135', german:'Hand', pron:'[hant]', pos:'die 名词', trans:'手', example:'Nimm meine Hand.', exampleTrans:'握住我的手。' },
+  { id:'w136', german:'Auge', pron:'[ˈaʊ̯ɡə]', pos:'das 名词', trans:'眼睛', example:'Sie hat blaue Augen.', exampleTrans:'她有蓝色的眼睛。' },
+  { id:'w137', german:'Fuß', pron:'[fuːs]', pos:'der 名词', trans:'脚', example:'Mein Fuß tut weh.', exampleTrans:'我脚疼。' },
+  { id:'w138', german:'Mund', pron:'[mʊnt]', pos:'der 名词', trans:'嘴', example:'Öffne den Mund.', exampleTrans:'张开嘴。' },
+  { id:'w139', german:'Krankenhaus', pron:'[ˈkʁaŋkn̩haʊ̯s]', pos:'das 名词', trans:'医院', example:'Er ist im Krankenhaus.', exampleTrans:'他在医院。' },
+  { id:'w140', german:'Arzt', pron:'[aʁt͡st]', pos:'der 名词', trans:'医生', example:'Der Arzt hilft mir.', exampleTrans:'医生帮助我。' },
+  { id:'w141', german:'Krankheit', pron:'[ˈkʁaŋkhaɪ̯t]', pos:'die 名词', trans:'疾病', example:'Welche Krankheit hast du?', exampleTrans:'你得了什么病？' },
+  { id:'w142', german:'gesund', pron:'[ɡəˈzʊnt]', pos:'形容词', trans:'健康的', example:'Ich bin gesund.', exampleTrans:'我很健康。' },
+  { id:'w143', german:'Medikament', pron:'[mediˈkaːmɛnt]', pos:'das 名词', trans:'药', example:'Nimm das Medikament.', exampleTrans:'吃药。' },
+  // === 自然与天气 ===
+  { id:'w144', german:'Sonne', pron:'[ˈzɔnə]', pos:'die 名词', trans:'太阳', example:'Die Sonne scheint.', exampleTrans:'阳光灿烂。' },
+  { id:'w145', german:'Mond', pron:'[moːnt]', pos:'der 名词', trans:'月亮', example:'Der Mond ist voll.', exampleTrans:'月亮是满月。' },
+  { id:'w146', german:'Himmel', pron:'[ˈhɪml̩]', pos:'der 名词', trans:'天空', example:'Der Himmel ist blau.', exampleTrans:'天空是蓝的。' },
+  { id:'w147', german:'Baum', pron:'[baʊ̯m]', pos:'der 名词', trans:'树', example:'Der Baum ist groß.', exampleTrans:'树很大。' },
+  { id:'w148', german:'Blume', pron:'[ˈbluːmə]', pos:'die 名词', trans:'花', example:'Die Blume ist rot.', exampleTrans:'花是红色的。' },
+  { id:'w149', german:'Berg', pron:'[bɛʁk]', pos:'der 名词', trans:'山', example:'Wir steigen den Berg.', exampleTrans:'我们爬山。' },
+  { id:'w150', german:'Meer', pron:'[meːɐ̯]', pos:'das 名词', trans:'海', example:'Wir fahren ans Meer.', exampleTrans:'我们去海边。' },
+  { id:'w151', german:'Regen', pron:'[ˈʁeːɡn̩]', pos:'der 名词', trans:'雨', example:'Der Regen fällt.', exampleTrans:'下雨了。' },
+  { id:'w152', german:'Schnee', pron:'[ʃneː]', pos:'der 名词', trans:'雪', example:'Der Schnee ist weiß.', exampleTrans:'雪是白的。' },
+  { id:'w153', german:'Wetter', pron:'[ˈvɛtɐ]', pos:'das 名词', trans:'天气', example:'Wie ist das Wetter?', exampleTrans:'天气怎么样？' },
+  // === 学校与学习 ===
+  { id:'w154', german:'Schule', pron:'[ˈʃuːlə]', pos:'die 名词', trans:'学校', example:'Ich gehe zur Schule.', exampleTrans:'我去上学。' },
+  { id:'w155', german:'Lehrer', pron:'[ˈleːʁɐ]', pos:'der 名词', trans:'老师', example:'Der Lehrer ist nett.', exampleTrans:'老师很和蔼。' },
+  { id:'w156', german:'Buch', pron:'[buːx]', pos:'das 名词', trans:'书', example:'Das Buch ist interessant.', exampleTrans:'这本书很有趣。' },
+  { id:'w157', german:'Stift', pron:'[ʃtɪft]', pos:'der 名词', trans:'笔', example:'Ich brauche einen Stift.', exampleTrans:'我需要一支笔。' },
+  { id:'w158', german:'Frage', pron:'[ˈfʁaːɡə]', pos:'die 名词', trans:'问题', example:'Ich habe eine Frage.', exampleTrans:'我有个问题。' },
+  { id:'w159', german:'Antwort', pron:'[ˈantvɔʁt]', pos:'die 名词', trans:'回答', example:'Die Antwort ist richtig.', exampleTrans:'答案是对的。' },
+  { id:'w160', german:'Wort', pron:'[vɔʁt]', pos:'das 名词', trans:'单词；话语', example:'Dieses Wort ist neu.', exampleTrans:'这个词是新的。' },
+  { id:'w161', german:'Sprache', pron:'[ˈʃpʁaːxə]', pos:'die 名词', trans:'语言', example:'Deutsch ist eine Sprache.', exampleTrans:'德语是一门语言。' },
+  { id:'w162', german:'Deutsch', pron:'[dɔɪ̯tʃ]', pos:'das 名词', trans:'德语', example:'Ich lerne Deutsch.', exampleTrans:'我学德语。' },
+  { id:'w163', german:'Fehler', pron:'[ˈfeːlɐ]', pos:'der 名词', trans:'错误', example:'Ich mache einen Fehler.', exampleTrans:'我犯了个错。' },
+  // === 家与物品 ===
+  { id:'w164', german:'Haus', pron:'[haʊ̯s]', pos:'das 名词', trans:'房子', example:'Mein Haus ist groß.', exampleTrans:'我的房子很大。' },
+  { id:'w165', german:'Wohnung', pron:'[ˈvoːnʊŋ]', pos:'die 名词', trans:'公寓', example:'Ich suche eine Wohnung.', exampleTrans:'我在找公寓。' },
+  { id:'w166', german:'Tür', pron:'[tyːɐ̯]', pos:'die 名词', trans:'门', example:'Die Tür ist offen.', exampleTrans:'门开着。' },
+  { id:'w167', german:'Fenster', pron:'[ˈfɛnstɐ]', pos:'das 名词', trans:'窗', example:'Schließe das Fenster.', exampleTrans:'关窗。' },
+  { id:'w168', german:'Tisch', pron:'[tɪʃ]', pos:'der 名词', trans:'桌子', example:'Der Tisch ist aus Holz.', exampleTrans:'桌子是木头的。' },
+  { id:'w169', german:'Stuhl', pron:'[ʃtuːl]', pos:'der 名词', trans:'椅子', example:'Setz dich auf den Stuhl.', exampleTrans:'坐到椅子上。' },
+  { id:'w170', german:'Bett', pron:'[bɛt]', pos:'das 名词', trans:'床', example:'Ich gehe ins Bett.', exampleTrans:'我去睡觉。' },
+  { id:'w171', german:'Lampe', pron:'[ˈlampə]', pos:'die 名词', trans:'灯', example:'Die Lampe ist an.', exampleTrans:'灯开着。' },
+  { id:'w172', german:'Schlüssel', pron:'[ˈʃlʏsl̩]', pos:'der 名词', trans:'钥匙', example:'Wo ist mein Schlüssel?', exampleTrans:'我的钥匙在哪？' },
+  { id:'w173', german:'Kleid', pron:'[klaɪ̯t]', pos:'das 名词', trans:'连衣裙', example:'Sie trägt ein rotes Kleid.', exampleTrans:'她穿红色连衣裙。' },
+  { id:'w174', german:'Schuh', pron:'[ʃuː]', pos:'der 名词', trans:'鞋', example:'Diese Schuhe sind bequem.', exampleTrans:'这双鞋很舒服。' },
+  { id:'w175', german:'Tasche', pron:'[ˈtaʃə]', pos:'die 名词', trans:'包', example:'Meine Tasche ist schwer.', exampleTrans:'我的包很重。' },
+  { id:'w176', german:'Geld', pron:'[ɡɛlt]', pos:'das 名词', trans:'钱', example:'Ich habe kein Geld.', exampleTrans:'我没钱。' },
+  // === 交通与旅行 ===
+  { id:'w177', german:'Auto', pron:'[ˈaʊ̯to]', pos:'das 名词', trans:'汽车', example:'Mein Auto ist rot.', exampleTrans:'我的车是红色的。' },
+  { id:'w178', german:'Zug', pron:'[tsuːk]', pos:'der 名词', trans:'火车', example:'Der Zug kommt spät.', exampleTrans:'火车晚点了。' },
+  { id:'w179', german:'Fahrrad', pron:'[ˈfaːɐ̯ˌʁaːt]', pos:'das 名词', trans:'自行车', example:'Ich fahre Fahrrad.', exampleTrans:'我骑自行车。' },
+  { id:'w180', german:'Reise', pron:'[ˈʁaɪ̯zə]', pos:'die 名词', trans:'旅行', example:'Die Reise war schön.', exampleTrans:'旅行很美。' },
+  { id:'w181', german:'Stadt', pron:'[ʃtat]', pos:'die 名词', trans:'城市', example:'Berlin ist eine große Stadt.', exampleTrans:'柏林是个大城市。' },
+  { id:'w182', german:'Straße', pron:'[ˈʃtʁaːsə]', pos:'die 名词', trans:'街道', example:'Die Straße ist lang.', exampleTrans:'街道很长。' },
+  { id:'w183', german:'Karte', pron:'[ˈkaʁtə]', pos:'die 名词', trans:'地图；票', example:'Ich brauche eine Karte.', exampleTrans:'我需要一张地图。' },
+  { id:'w184', german:'Weg', pron:'[veːk]', pos:'der 名词', trans:'路；方式', example:'Welcher Weg ist richtig?', exampleTrans:'哪条路是对的？' },
+  // === 工作与职业 ===
+  { id:'w185', german:'Beruf', pron:'[bəˈʁuːf]', pos:'der 名词', trans:'职业', example:'Was ist dein Beruf?', exampleTrans:'你的职业是什么？' },
+  { id:'w186', german:'Arbeit', pron:'[ˈaʁbaɪ̯t]', pos:'die 名词', trans:'工作', example:'Die Arbeit ist schwer.', exampleTrans:'工作很辛苦。' },
+  { id:'w187', german:'Büro', pron:'[byˈʁoː]', pos:'das 名词', trans:'办公室', example:'Ich bin im Büro.', exampleTrans:'我在办公室。' },
+  { id:'w188', german:'Chef', pron:'[ʃɛf]', pos:'der 名词', trans:'老板', example:'Mein Chef ist streng.', exampleTrans:'我老板很严格。' },
+  { id:'w189', german:'Kollege', pron:'[kɔˈleːɡə]', pos:'der 名词', trans:'同事', example:'Mein Kollege hilft mir.', exampleTrans:'我同事帮我。' },
+  { id:'w190', german:'Computer', pron:'[kɔmˈpjuːtɐ]', pos:'der 名词', trans:'电脑', example:'Ich arbeite am Computer.', exampleTrans:'我用电脑工作。' },
+  { id:'w191', german:'Telefon', pron:'[teˈleːfɔn]', pos:'das 名词', trans:'电话', example:'Das Telefon klingelt.', exampleTrans:'电话响了。' },
+  { id:'w192', german:'Firma', pron:'[ˈfɪʁma]', pos:'die 名词', trans:'公司', example:'Die Firma ist groß.', exampleTrans:'公司很大。' },
+  // === 情感与形容 ===
+  { id:'w193', german:'nett', pron:'[nɛt]', pos:'形容词', trans:'友好的', example:'Du bist sehr nett.', exampleTrans:'你真好。' },
+  { id:'w194', german:'wichtig', pron:'[ˈvɪçtɪç]', pos:'形容词', trans:'重要的', example:'Das ist wichtig für mich.', exampleTrans:'这对我很重要。' },
+  { id:'w195', german:'interessant', pron:'[ɪntəˈʁɛsant]', pos:'形容词', trans:'有趣的', example:'Der Film ist interessant.', exampleTrans:'电影很有趣。' },
+  { id:'w196', german:'lustig', pron:'[ˈlʊstɪç]', pos:'形容词', trans:'有趣的；好笑的', example:'Er ist lustig.', exampleTrans:'他很搞笑。' },
+  { id:'w197', german:'allein', pron:'[aˈlaɪ̯n]', pos:'副词', trans:'独自', example:'Ich bin allein zu Hause.', exampleTrans:'我一个人在家。' },
+  { id:'w198', german:'zusammen', pron:'[tsuˈzamən]', pos:'副词', trans:'一起', example:'Wir gehen zusammen.', exampleTrans:'我们一起走。' },
+  { id:'w199', german:'vielleicht', pron:'[fiˈlaɪ̯çt]', pos:'副词', trans:'也许', example:'Vielleicht komme ich später.', exampleTrans:'也许我晚点来。' },
+  { id:'w200', german:'immer', pron:'[ˈɪmɐ]', pos:'副词', trans:'总是', example:'Ich denke immer an dich.', exampleTrans:'我总是想着你。' },
+];
+
+// 剧情节点
+const SCENES = [
+  { id:'s0', name:'初遇 · 星辰之召唤', req:0, unlocked:true,
+    content:'你睁开眼，发现自己置身于一座由星光编织的古老图书馆。一位银发骑士单膝跪在你面前，紫色的眼眸映着烛火。',
+    de:'"Willkommen, Reisender. Die Sterne haben dich zu uns gerufen." ——欢迎，旅人。星辰将你召唤至此。' },
+  { id:'s1', name:'自我介绍 · 骑士之名', req:100,
+    content:'莱纳站起身，将手放在胸口。"我是莱纳·冯·施特恩，星辰语学院的守护骑士。在这里，每一个德语单词都是一道咒语——而你，是唯一能咏唱它们的人。"',
+    de:'"Mein Name ist Rainer von Stern. Lerne mit mir, und die Sterne werden dir gehören." ——我的名字是莱纳·冯·施特恩。与我一同学习，星辰将属于你。' },
+  { id:'s2', name:'并肩 · 第一场战斗', req:300,
+    content:'暗影语兽从书架间涌出。莱纳挡在你身前，回头低声说："别怕，咏唱吧。你的每一个单词，都是我的剑刃。"',
+    de:'"Hab keine Angst. Jedes Wort, das du sprichst, gibt mir Kraft." ——别害怕。你说的每一个字，都给予我力量。' },
+  { id:'s3', name:'月下 · 心意初萌', req:600,
+    content:'试炼后的夜晚，莱纳陪你站在塔顶。月光下他的侧脸柔和下来。"你知道吗……在你来之前，我已经很久没有这样笑了。"',
+    de:'"Weißt du... bevor du kamst, hatte ich lange nicht mehr so gelacht." ——你知道吗……在你来之前，我已经很久没有这样笑了。' },
+  { id:'s4', name:'誓约 · 永恒之星', req:1000,
+    content:'莱纳取下颈间的星形吊坠，轻轻为你戴上。"这不是告别，而是开始。无论你身在何处，只要念出德语的咒语，我就会在你身边。"',
+    de:'"Für immer und ewig. Du bist mein Stern." ——永远与永恒。你是我的星辰。' },
+];
+
+// 玩家称号
+const TITLES = [
+  { lv:1, name:'见习咒文士' },
+  { lv:3, name:'星辰学徒' },
+  { lv:5, name:'语之光魔导士' },
+  { lv:8, name:'星辰骑士' },
+  { lv:12, name:'月之贤者' },
+  { lv:16, name:'星语大师' },
+  { lv:20, name:'永恒之星' },
+];
+
+// 角色心情（按打卡状态）
+const MOODS = {
+  waiting: { emoji:'🌙', text:'莱纳在塔顶等待你的到来……' },
+  happy: { emoji:'✨', text:'莱纳的眼眸亮了起来，"你来了。"' },
+  proud: { emoji:'⭐', text:'莱纳微笑着，"今天的咏唱，很出色。"' },
+  miss: { emoji:'💫', text:'莱纳望着星空，"你昨天没来……我在这里等了。"' },
+  sad: { emoji:'🌑', text:'莱纳低着头，"星辰……也寂寞吗？"' },
+};
+
+let state = null;
+
+function defaultState() {
+  return {
+    player: { level:1, exp:0, hp:100, maxHp:100, streak:0, lastCheckIn:null, totalLearned:0, dailyGoal:3 },
+    character: { affection:0, unlockedScenes:['s0'] },
+    words: [], // {id, mastery:0/1/2, learnedDate, lastReview, nextReview, status}
+    todayLearned: [], // 今日已学单词id
+    todayReviewed: [], // 今日已复习单词id
+    todayDate: today(),
+    isNewUser: true,
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      state = JSON.parse(raw);
+      // 数据迁移/补全
+      if (!state.player) state = defaultState();
+      // 日期切换重置今日记录
+      if (state.todayDate !== today()) {
+        // 之前没打卡的词标记逾期
+        state.words.forEach(w => {
+          if (w.nextReview && w.nextReview < today() && w.mastery < 2) {
+            w.status = 'overdue';
+          }
+        });
+        state.todayLearned = [];
+        state.todayReviewed = [];
+        state.todayDate = today();
+      }
+    } else {
+      state = defaultState();
+      seedSampleData();
+    }
+  } catch(e) {
+    state = defaultState();
+    seedSampleData();
+  }
+  saveState();
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// 预置示例数据（含1条逾期）
+function seedSampleData() {
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+  const dayBefore = new Date(Date.now() - 2*86400000).toISOString().slice(0,10);
+  state.words = [
+    { id:'w1', mastery:1, learnedDate:dayBefore, lastReview:yesterday, nextReview:today(), status:'review' },
+    { id:'w2', mastery:1, learnedDate:dayBefore, lastReview:yesterday, nextReview:today(), status:'review' },
+    { id:'w3', mastery:0, learnedDate:dayBefore, lastReview:dayBefore, nextReview:yesterday, status:'overdue' }, // 逾期
+  ];
+  state.player.streak = 2;
+  state.player.lastCheckIn = yesterday;
+  state.player.totalLearned = 3;
+  state.player.exp = 40;
+  state.player.level = 1;
+  state.character.affection = 80;
+  state.character.unlockedScenes = ['s0'];
+  state.isNewUser = true;
+}
+
+// ============ 经验/等级 ============
+function expForLevel(lv) { return lv * 100; }
+function recalcLevel() {
+  let lv = 1;
+  while (state.player.exp >= expForLevel(lv+1)) lv++;
+  state.player.level = lv;
+}
+function getTitle(lv) {
+  let t = TITLES[0].name;
+  for (const t2 of TITLES) if (lv >= t2.lv) t = t2.name;
+  return t;
+}
+
+// ============ Streak 管理 ============
+function updateStreak() {
+  const last = state.player.lastCheckIn;
+  const t = today();
+  if (last === t) return; // 今天已打卡
+  if (last === new Date(Date.now()-86400000).toISOString().slice(0,10)) {
+    // 昨天打过，streak+1
+  } else if (last && last < new Date(Date.now()-86400000).toISOString().slice(0,10)) {
+    // 断了
+    state.player.streak = 0;
+  }
+}
+function checkIn() {
+  const t = today();
+  if (state.player.lastCheckIn !== t) {
+    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if (state.player.lastCheckIn === yesterday) {
+      state.player.streak += 1;
+    } else {
+      state.player.streak = 1;
+    }
+    state.player.lastCheckIn = t;
+  }
+}
+
+// ============ 渲染 ============
+function renderHeader() {
+  recalcLevel();
+  document.getElementById('playerLevel').textContent = state.player.level;
+  document.getElementById('playerTitle').textContent = getTitle(state.player.level);
+  document.getElementById('streakDays').textContent = state.player.streak;
+  const need = expForLevel(state.player.level+1) - expForLevel(state.player.level);
+  const cur = state.player.exp - expForLevel(state.player.level);
+  document.getElementById('expBar').style.width = Math.min(100, cur/need*100) + '%';
+}
+
+function renderToday() {
+  const list = document.getElementById('todayList');
+  const items = [];
+  // 今日待复习
+  const reviewDue = state.words.filter(w => (w.status === 'review' || w.status === 'overdue') && !state.todayReviewed.includes(w.id));
+  // 今日待学新词
+  const newDue = getTodayNewWords();
+  // 逾期项
+  const overdue = state.words.filter(w => w.status === 'overdue' && !state.todayReviewed.includes(w.id));
+
+  let totalTasks = 0;
+  let doneTasks = 0;
+
+  // 逾期单词
+  overdue.forEach(w => {
+    totalTasks++;
+    const wd = WORD_BANK.find(x => x.id === w.id);
+    if (!wd) return;
+    items.push(`
+      <div class="today-item overdue">
+        <div class="today-item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="today-item-content">
+          <div class="today-item-title">复习 ${wd.german}</div>
+          <div class="today-item-desc">昨天未复习的单词</div>
+        </div>
+        <button class="today-item-btn" onclick="goAdventure()">去复习</button>
+      </div>
+    `);
+  });
+
+  // 今日复习任务
+  const reviewLeft = reviewDue.filter(w => w.status === 'review');
+  if (reviewLeft.length > 0) {
+    totalTasks++;
+    const done = reviewLeft.length === 0;
+    if (done) doneTasks++;
+    items.push(`
+      <div class="today-item ${done?'done':''}">
+        <div class="today-item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+        </div>
+        <div class="today-item-content">
+          <div class="today-item-title">复习旧词</div>
+          <div class="today-item-desc">还有 ${reviewLeft.length} 个单词待复习</div>
+        </div>
+        ${done?'<button class="today-item-btn" style="background:var(--success)">已完成</button>':'<button class="today-item-btn" onclick="goAdventure()">去复习</button>'}
+      </div>
+    `);
+  }
+
+  // 今日新词任务
+  totalTasks++;
+  const newDone = newDue.length === 0 || state.todayLearned.length >= state.player.dailyGoal;
+  if (newDone) doneTasks++;
+  const newLeft = Math.max(0, state.player.dailyGoal - state.todayLearned.length);
+  items.push(`
+    <div class="today-item ${newDone?'done':''}">
+      <div class="today-item-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="today-item-content">
+        <div class="today-item-title">学习新词</div>
+        <div class="today-item-desc">今日目标 ${state.player.dailyGoal} 个，已完成 ${state.todayLearned.length} 个</div>
+      </div>
+      ${newDone?'<button class="today-item-btn" style="background:var(--success)">已完成</button>':`<button class="today-item-btn" onclick="goAdventure()">去学习</button>`}
+    </div>
+  `);
+
+  if (state.player.streak === 0 && state.player.lastCheckIn !== today()) {
+    items.unshift(`
+      <div class="today-item overdue">
+        <div class="today-item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        </div>
+        <div class="today-item-content">
+          <div class="today-item-title">连续打卡中断了</div>
+          <div class="today-item-desc">完成今日任意任务即可重启 streak</div>
+        </div>
+        <button class="today-item-btn" onclick="goAdventure()">重启冒险</button>
+      </div>
+    `);
+  }
+
+  document.getElementById('todayCount').textContent = `${doneTasks}/${totalTasks} 完成`;
+  list.innerHTML = items.join('') || '<div class="empty-hint">今日任务已全部完成，去休息吧 ✨</div>';
+}
+
+function getTodayNewWords() {
+  const learned = state.words.map(w => w.id);
+  return WORD_BANK.filter(w => !learned.includes(w.id)).slice(0, state.player.dailyGoal - state.todayLearned.length);
+}
+
+function renderWordQueue() {
+  const queue = document.getElementById('wordQueue');
+  const reviewDue = state.words.filter(w => (w.status === 'review' || w.status === 'overdue') && !state.todayReviewed.includes(w.id));
+  const newDue = getTodayNewWords();
+  const total = reviewDue.length + newDue.length;
+  let html = '';
+  // 已完成复习
+  state.words.forEach(w => {
+    if (state.todayReviewed.includes(w.id)) {
+      html += `<div class="word-pip done"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>`;
+    }
+  });
+  // 待复习
+  reviewDue.forEach(() => { html += `<div class="word-pip">复</div>`; });
+  // 已学新词
+  state.todayLearned.forEach(() => { html += `<div class="word-pip done"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>`; });
+  // 待学新词
+  newDue.forEach(() => { html += `<div class="word-pip">新</div>`; });
+
+  if (total === 0 && state.todayLearned.length === 0 && state.todayReviewed.length === 0) {
+    queue.innerHTML = '<div style="color:var(--text-mute);font-size:13px;width:100%">今日已无可学新词，明日再来 ✨</div>';
+  } else {
+    queue.innerHTML = html;
+  }
+  return total;
+}
+
+// ============ 冒险逻辑 ============
+let adventureQueue = []; // 本次冒险的单词队列
+let adventureIdx = 0;
+let enemyHp = 100;
+let playerHp = 100;
+let correctCount = 0;
+let currentMode = 'learn'; // learn / quiz
+let currentQuizType = 'de2zh'; // de2zh: 看德语选中文, zh2de: 看中文选德语
+
+function goAdventure() {
+  switchTab('adventure');
+  resetAdventure();
+  startAdventure();
+  // 队列有内容就直接进入答题，避免用户还要再点一次"开始冒险"
+  if (adventureQueue.length > 0) {
+    beginQuiz();
+  }
+}
+
+function resetAdventure() {
+  adventureQueue = [];
+  adventureIdx = 0;
+  enemyHp = 100;
+  playerHp = 100;
+  correctCount = 0;
+  document.getElementById('adventureIntro').style.display = 'block';
+  document.getElementById('quizPanel').classList.remove('active');
+  document.getElementById('resultStage').style.display = 'none';
+}
+
+function startAdventure() {
+  // 构建本次队列：先复习逾期/到期，再学新词
+  const reviewDue = state.words.filter(w => (w.status === 'review' || w.status === 'overdue') && !state.todayReviewed.includes(w.id));
+  const newDue = getTodayNewWords();
+  adventureQueue = [...reviewDue.map(w => ({...w, _type:'review'})), ...newDue.map(w => ({id:w.id, _type:'new'}))];
+
+  if (adventureQueue.length === 0) {
+    document.getElementById('introTitle').textContent = '今日试炼已完成';
+    document.getElementById('introDesc').textContent = '你已完成今日所有任务，去图鉴里回顾，或等待明日新词。';
+    document.getElementById('startBtn').textContent = '查看图鉴';
+    document.getElementById('startBtn').onclick = () => switchTab('dex');
+    renderWordQueue();
+    return;
+  }
+
+  document.getElementById('startBtn').textContent = '开始冒险';
+  document.getElementById('startBtn').onclick = beginQuiz;
+  renderWordQueue();
+}
+
+function beginQuiz() {
+  document.getElementById('adventureIntro').style.display = 'none';
+  document.getElementById('quizPanel').classList.add('active');
+  document.getElementById('resultStage').style.display = 'none';
+  enemyHp = 100;
+  playerHp = 100;
+  updateBattleHp();
+  loadCurrentWord();
+}
+
+function loadCurrentWord() {
+  if (adventureIdx >= adventureQueue.length) {
+    finishAdventure();
+    return;
+  }
+  const item = adventureQueue[adventureIdx];
+  const wd = WORD_BANK.find(w => w.id === item.id);
+  if (!wd) { adventureIdx++; loadCurrentWord(); return; }
+
+  // 学习阶段：展示单词详情
+  currentMode = 'learn';
+  document.getElementById('learnStage').style.display = 'block';
+  document.getElementById('quizStage').style.display = 'none';
+  document.getElementById('feedbackPanel').classList.remove('show');
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const isNew = item._type === 'new';
+  document.getElementById('wordDetail').innerHTML = `
+    <div style="font-size:11px;color:${isNew?'var(--gold)':'var(--primary)'};letter-spacing:1px;margin-bottom:8px">${isNew?'★ 新咒语习得':'↻ 旧咒语复习'}</div>
+    <div class="dw-word">${wd.german}</div>
+    <div class="dw-pron">${wd.pron}</div>
+    <span class="dw-pos">${wd.pos}</span>
+    <button class="speak-btn" onclick="speakWord('${wd.german}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      听发音
+    </button>
+    <div class="dw-trans">${wd.trans}</div>
+    <div class="dw-example">
+      <div class="dw-example-de">${wd.example}</div>
+      <div class="dw-example-zh">${wd.exampleTrans}</div>
+    </div>
+  `;
+}
+
+function speakWord(word) {
+  if ('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    speechSynthesis.speak(u);
+  } else {
+    toast('当前浏览器不支持语音播放', 'error');
+  }
+}
+
+function startQuizStage() {
+  currentMode = 'quiz';
+  document.getElementById('learnStage').style.display = 'none';
+  document.getElementById('quizStage').style.display = 'block';
+
+  const item = adventureQueue[adventureIdx];
+  const wd = WORD_BANK.find(w => w.id === item.id);
+  // 随机题型
+  currentQuizType = Math.random() > 0.5 ? 'de2zh' : 'zh2de';
+
+  if (currentQuizType === 'de2zh') {
+    document.getElementById('quizPromptLabel').textContent = '这道咒语的含义是？';
+    document.getElementById('quizWord').textContent = wd.german;
+    document.getElementById('quizMeta').innerHTML = `<span>${wd.pron}</span><span>${wd.pos}</span>`;
+  } else {
+    document.getElementById('quizPromptLabel').textContent = '对应的德语咒语是？';
+    document.getElementById('quizWord').textContent = wd.trans;
+    document.getElementById('quizMeta').innerHTML = `<span>中文释义</span>`;
+  }
+
+  // 生成选项（4选1）
+  const others = WORD_BANK.filter(w => w.id !== wd.id).sort(() => Math.random()-0.5).slice(0,3);
+  const options = [wd, ...others].sort(() => Math.random()-0.5);
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = options.map(o => {
+    const text = currentQuizType === 'de2zh' ? o.trans : o.german;
+    return `<button class="option-btn" onclick="answerQuiz('${o.id}', '${wd.id}')">${text}</button>`;
+  }).join('');
+  document.getElementById('feedbackPanel').classList.remove('show');
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+function answerQuiz(picked, correct) {
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.disabled = true);
+  const isCorrect = picked === correct;
+  const wd = WORD_BANK.find(w => w.id === correct);
+
+  if (isCorrect) {
+    correctCount++;
+    // 怪物扣血
+    const dmg = 30 + Math.floor(Math.random()*20);
+    enemyHp = Math.max(0, enemyHp - dmg);
+    buttons.forEach(b => {
+      if (b.textContent === (currentQuizType==='de2zh'? wd.trans : wd.german)) b.classList.add('correct');
+    });
+    showFeedback(true, wd, dmg);
+  } else {
+    // 玩家扣血
+    const dmg = 15;
+    playerHp = Math.max(0, playerHp - dmg);
+    buttons.forEach(b => {
+      if (b.textContent === (currentQuizType==='de2zh'? wd.trans : wd.german)) b.classList.add('correct');
+      else if (b.onclick.toString().includes(`'${picked}'`)) b.classList.add('wrong');
+    });
+    showFeedback(false, wd, dmg);
+  }
+  updateBattleHp();
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+function showFeedback(correct, wd, dmg) {
+  const panel = document.getElementById('feedbackPanel');
+  if (correct) {
+    const expGain = 10;
+    const loveGain = 5;
+    panel.innerHTML = `
+      <div class="feedback-title win">✦ 咒语命中！</div>
+      <div class="feedback-detail">对暗影语兽造成 ${dmg} 点伤害</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <span class="feedback-reward">+${expGain} EXP</span>
+        <span class="feedback-reward love">+${loveGain} 好感</span>
+      </div>
+    `;
+  } else {
+    panel.innerHTML = `
+      <div class="feedback-title lose">✕ 咒语反噬</div>
+      <div class="feedback-detail">正确答案：<strong style="color:var(--gold)">${wd.german}</strong> = ${wd.trans}</div>
+      <div class="feedback-detail" style="color:var(--danger);margin-top:6px">你受到了 ${dmg} 点伤害</div>
+    `;
+  }
+  panel.classList.add('show');
+}
+
+function updateBattleHp() {
+  document.getElementById('enemyHpFill').style.width = enemyHp + '%';
+  document.getElementById('playerHpFill').style.width = playerHp + '%';
+  document.getElementById('playerHpText').textContent = playerHp;
+}
+
+function nextWord() {
+  // 记录答题结果
+  const item = adventureQueue[adventureIdx];
+  const wd = WORD_BANK.find(w => w.id === item.id);
+  const wasCorrect = document.querySelector('.option-btn.correct.wrong') ? false : true;
+  // 简单判断：如果feedback是win就是对的（上面记录了correctCount）
+  // 这里用 adventureIdx 对应是否正确：用全局标记
+  // 改为在answerQuiz时记录
+  const lastCorrect = (document.getElementById('feedbackPanel').querySelector('.win') !== null);
+
+  // 更新单词状态
+  if (item._type === 'new') {
+    // 新词加入词库
+    let existing = state.words.find(w => w.id === item.id);
+    if (!existing) {
+      state.words.push({
+        id: item.id,
+        mastery: lastCorrect ? 1 : 0,
+        learnedDate: today(),
+        lastReview: today(),
+        nextReview: lastCorrect ? new Date(Date.now()+86400000).toISOString().slice(0,10) : today(),
+        status: lastCorrect ? 'review' : 'overdue'
+      });
+      state.player.totalLearned++;
+      state.todayLearned.push(item.id);
+    }
+  } else {
+    // 复习
+    let existing = state.words.find(w => w.id === item.id);
+    if (existing) {
+      existing.lastReview = today();
+      if (lastCorrect) {
+        existing.mastery = Math.min(2, existing.mastery + 1);
+        existing.nextReview = new Date(Date.now() + (existing.mastery >= 2 ? 3*86400000 : 86400000)).toISOString().slice(0,10);
+        existing.status = 'review';
+      } else {
+        existing.mastery = Math.max(0, existing.mastery - 1);
+        existing.nextReview = new Date(Date.now()+86400000).toISOString().slice(0,10);
+        existing.status = 'review';
+      }
+      if (!state.todayReviewed.includes(item.id)) state.todayReviewed.push(item.id);
+    }
+  }
+
+  // 奖励
+  if (lastCorrect) {
+    state.player.exp += 10;
+    state.character.affection += 5;
+  } else {
+    state.character.affection += 1; // 答错也给一点点安慰
+  }
+
+  // 检查剧情解锁
+  checkSceneUnlock();
+
+  // 怪物死亡或继续
+  if (enemyHp <= 0) {
+    // 额外奖励
+    state.player.exp += 20;
+    state.character.affection += 10;
+    checkSceneUnlock();
+  }
+
+  adventureIdx++;
+  saveState();
+  renderHeader();
+
+  if (adventureIdx >= adventureQueue.length || playerHp <= 0 || enemyHp <= 0) {
+    finishAdventure();
+  } else {
+    loadCurrentWord();
+  }
+}
+
+function checkSceneUnlock() {
+  SCENES.forEach(s => {
+    if (state.character.affection >= s.req && !state.character.unlockedScenes.includes(s.id)) {
+      state.character.unlockedScenes.push(s.id);
+      toast(`✦ 解锁剧情：${s.name}`, 'success');
+    }
+  });
+}
+
+function finishAdventure() {
+  document.getElementById('quizPanel').classList.remove('active');
+  document.getElementById('adventureIntro').style.display = 'none';
+  document.getElementById('resultStage').style.display = 'block';
+
+  const passed = playerHp > 0;
+  document.getElementById('resultTitle').textContent = passed ? '试炼完成' : '试炼中止';
+  document.getElementById('resultTitle').style.color = passed ? 'var(--gold)' : 'var(--danger)';
+
+  let desc = '';
+  if (passed) {
+    desc = `你咏唱了 ${adventureQueue.length} 道咒语，命中 ${correctCount} 次。莱纳向你微微颔首。`;
+  } else {
+    desc = `HP 耗尽，你被传送回学院。本次咏唱 ${adventureQueue.length} 道，命中 ${correctCount} 次。休息一下再来吧。`;
+  }
+  document.getElementById('resultDesc').textContent = desc;
+
+  const expTotal = correctCount * 10 + (passed ? 20 : 0);
+  const loveTotal = correctCount * 5 + (passed ? 10 : 0);
+  document.getElementById('resultRewards').innerHTML = `
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <span class="feedback-reward">+${expTotal} EXP</span>
+      <span class="feedback-reward love">+${loveTotal} 好感度</span>
+    </div>
+  `;
+
+  // 打卡
+  if (correctCount > 0) {
+    checkIn();
+  }
+
+  saveState();
+  renderAll();
+}
+
+// ============ 角色面板 ============
+function renderCharacter() {
+  const aff = state.character.affection;
+  const max = 1000;
+  document.getElementById('affectionNum').textContent = aff;
+  document.getElementById('affectionBar').style.width = Math.min(100, aff/max*100) + '%';
+
+  // 称号
+  let title = '陌生骑士';
+  if (aff >= 1000) title = '星辰誓约';
+  else if (aff >= 600) title = '心意相通的挚友';
+  else if (aff >= 300) title = '并肩的伙伴';
+  else if (aff >= 100) title = '相识的骑士';
+  document.getElementById('charTitle').textContent = title;
+
+  // 心心（5格，每200一格）
+  const heartFill = Math.min(5, Math.floor(aff/200));
+  let hearts = '';
+  for (let i=0;i<5;i++) hearts += i<heartFill ? '♥' : '♡';
+  document.getElementById('hearts').textContent = hearts;
+
+  // 心情
+  let moodKey = 'waiting';
+  if (state.player.lastCheckIn === today()) {
+    moodKey = correctCount > 0 ? 'proud' : 'happy';
+  } else if (state.player.lastCheckIn) {
+    const diff = (Date.now() - new Date(state.player.lastCheckIn).getTime()) / 86400000;
+    if (diff >= 3) moodKey = 'sad';
+    else if (diff >= 2) moodKey = 'miss';
+    else moodKey = 'waiting';
+  }
+  const mood = MOODS[moodKey];
+  document.getElementById('moodBadge').textContent = mood.emoji;
+  document.getElementById('dialogueLine').textContent = mood.text;
+
+  // 对应德语
+  const moodDe = {
+    waiting: 'Ich warte auf dich...',
+    happy: 'Du bist da.',
+    proud: 'Deine Zauber waren heute wundervoll.',
+    miss: 'Gestern warst du nicht hier...',
+    sad: 'Sind die Sterne auch einsam?'
+  };
+  document.getElementById('dialogueDe').textContent = moodDe[moodKey];
+
+  // 剧情列表
+  const list = document.getElementById('sceneList');
+  let unlockedCount = 0;
+  list.innerHTML = SCENES.map(s => {
+    const unlocked = state.character.unlockedScenes.includes(s.id);
+    if (unlocked) unlockedCount++;
+    return `
+      <div class="scene-item ${unlocked?'unlocked':'locked'}" onclick="${unlocked?`openScene('${s.id}')`:''}">
+        <div class="scene-icon-sm">
+          ${unlocked
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+          }
+        </div>
+        <div class="scene-info">
+          <div class="scene-name">${s.name}</div>
+          <div class="scene-req">${unlocked ? '已解锁' : `需好感度 ${s.req}`}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('sceneCount').textContent = `${unlockedCount}/${SCENES.length}`;
+}
+
+function openScene(id) {
+  const s = SCENES.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('sceneModalTitle').textContent = s.name;
+  document.getElementById('sceneModalContent').innerHTML = `
+    <p>${s.content}</p>
+    <div class="scene-de">${s.de}</div>
+  `;
+  document.getElementById('sceneModal').classList.add('show');
+}
+
+// ============ 图鉴 ============
+let dexFilter = 'all';
+function renderDex() {
+  const grid = document.getElementById('dexGrid');
+  const learned = state.words;
+  let count = 0;
+  let html = '';
+  // 已学单词
+  learned.forEach(w => {
+    const wd = WORD_BANK.find(x => x.id === w.id);
+    if (!wd) return;
+    if (dexFilter !== 'all' && w.mastery !== parseInt(dexFilter)) return;
+    count++;
+    let dots = '';
+    for (let i=0;i<3;i++) dots += `<span class="mastery-dot ${i<w.mastery?'filled':''}"></span>`;
+    html += `
+      <div class="dex-card ${w.mastery===0?'unseen':''}" onclick="reviewWord('${w.id}')">
+        <div class="dw-pos-mini">${wd.pos.split(' ')[0]}</div>
+        <div class="dw-word">${wd.german}</div>
+        <div class="dw-trans">${wd.trans}</div>
+        <div class="dw-mastery">${dots}</div>
+      </div>
+    `;
+  });
+  // 未学的词库单词（显示为未发现）
+  if (dexFilter === 'all' || dexFilter === '0') {
+    WORD_BANK.forEach(wd => {
+      if (learned.find(w => w.id === wd.id)) return;
+      count++;
+      html += `
+        <div class="dex-card unseen" style="opacity:0.35">
+          <div class="dw-pos-mini">???</div>
+          <div class="dw-word">?</div>
+          <div class="dw-trans">未发现</div>
+          <div class="dw-mastery"><span class="mastery-dot"></span><span class="mastery-dot"></span><span class="mastery-dot"></span></div>
+        </div>
+      `;
+    });
+  }
+  if (count === 0) {
+    html = '<div class="dex-empty">该分类下暂无单词</div>';
+  }
+  grid.innerHTML = html;
+  document.getElementById('dexCount').textContent = `${state.words.length}/${WORD_BANK.length} 已收集`;
+}
+
+function reviewWord(id) {
+  // 加入复习队列：把status设为review，nextReview设为今天
+  const w = state.words.find(x => x.id === id);
+  if (w) {
+    w.status = 'review';
+    w.nextReview = today();
+    saveState();
+    toast('已加入今日复习队列', 'success');
+    renderToday();
+    renderWordQueue();
+  }
+}
+
+// ============ Tab 切换 ============
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('tab-'+tab).style.display = 'block';
+  if (tab === 'character') renderCharacter();
+  if (tab === 'dex') renderDex();
+  if (tab === 'adventure') { resetAdventure(); startAdventure(); }
+}
+
+// ============ 备份提示 ============
+function checkBackupHint() {
+  const total = state.words.length;
+  const hint = document.getElementById('backupHint');
+  const text = document.getElementById('backupHintText');
+  if (total >= 30 && total % 10 === 0) {
+    text.textContent = `数据已积累 ${total} 条，建议导出备份以防丢失`;
+    hint.classList.add('show');
+  } else {
+    hint.classList.remove('show');
+  }
+}
+
+// ============ 导出导入 ============
+function exportData() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `德语词汇备份_${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('备份已导出', 'success');
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.player || !data.words) throw new Error('格式错误');
+      state = data;
+      saveState();
+      renderAll();
+      toast('数据导入成功', 'success');
+    } catch(err) {
+      toast('导入失败：文件格式不正确', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ============ Toast ============
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============ 渲染全部 ============
+function renderAll() {
+  renderHeader();
+  renderToday();
+  renderWordQueue();
+  renderCharacter();
+  renderDex();
+  checkBackupHint();
+}
+
+// ============ 星空背景 ============
+function initStars() {
+  const bg = document.getElementById('starsBg');
+  let html = '';
+  for (let i=0;i<40;i++) {
+    const size = Math.random()*2+1;
+    html += `<div class="star" style="width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s"></div>`;
+  }
+  bg.innerHTML = html;
+}
+
+// ============ 事件绑定 ============
+function bindEvents() {
+  // Tab
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.onclick = () => switchTab(b.dataset.tab);
+  });
+
+  // 开始冒险
+  document.getElementById('startBtn').onclick = beginQuiz;
+
+  // 已记住
+  document.getElementById('memorizedBtn').onclick = startQuizStage;
+
+  // 下一题
+  document.getElementById('nextBtn').onclick = nextWord;
+
+  // 完成返回
+  document.getElementById('finishBtn').onclick = () => {
+    resetAdventure();
+    startAdventure();
+  };
+
+  // 导出导入
+  document.getElementById('exportBtn').onclick = exportData;
+  document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+  document.getElementById('importFile').onchange = e => {
+    if (e.target.files[0]) importData(e.target.files[0]);
+    e.target.value = '';
+  };
+
+  // 设置
+  document.getElementById('settingsBtn').onclick = () => {
+    document.getElementById('dailyGoalShow').textContent = state.player.dailyGoal;
+    document.querySelectorAll('[data-goal]').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.goal) === state.player.dailyGoal);
+      b.onclick = () => {
+        state.player.dailyGoal = parseInt(b.dataset.goal);
+        document.getElementById('dailyGoalShow').textContent = state.player.dailyGoal;
+        document.querySelectorAll('[data-goal]').forEach(x => x.classList.toggle('active', x === b));
+        saveState();
+        renderAll();
+      };
+    });
+    document.getElementById('settingsModal').classList.add('show');
+  };
+  document.getElementById('closeSettingsBtn').onclick = () => document.getElementById('settingsModal').classList.remove('show');
+
+  // 清空示例
+  document.getElementById('clearSamplesBtn').onclick = () => {
+    if (!confirm('确认清空示例数据？将保留你之后的学习记录。')) return;
+    // 只移除预置的w1,w2,w3
+    state.words = state.words.filter(w => !['w1','w2','w3'].includes(w.id) || w.learnedDate !== state.words.find(x=>x.id===w.id)?.learnedDate);
+    // 简化：直接重置但保留exp/affection
+    saveState();
+    renderAll();
+    toast('示例数据已清空', 'success');
+  };
+
+  // 清空全部
+  document.getElementById('clearAllBtn').onclick = () => {
+    if (!confirm('⚠️ 确认清空全部数据？此操作不可撤销，所有学习进度、好感度、等级都将丢失！')) return;
+    if (!confirm('再次确认：真的要清空所有数据吗？')) return;
+    state = defaultState();
+    saveState();
+    renderAll();
+    toast('全部数据已清空', 'success');
+  };
+
+  // 图鉴筛选
+  document.querySelectorAll('.filter-chip[data-filter]').forEach(c => {
+    c.onclick = () => {
+      document.querySelectorAll('.filter-chip[data-filter]').forEach(x => x.classList.toggle('active', x === c));
+      dexFilter = c.dataset.filter;
+      renderDex();
+    };
+  });
+
+  // 剧情模态框关闭
+  document.getElementById('closeSceneBtn').onclick = () => document.getElementById('sceneModal').classList.remove('show');
+
+  // 点击模态框遮罩关闭
+  document.querySelectorAll('.modal-mask').forEach(m => {
+    m.onclick = e => { if (e.target === m) m.classList.remove('show'); };
+  });
+}
+
+// ============ 启动 ============
+loadState();
+initStars();
+bindEvents();
+renderAll();
+startAdventure();
+
+// 暴露给 onclick
+window.goAdventure = goAdventure;
+window.switchTab = switchTab;
+window.speakWord = speakWord;
+window.answerQuiz = answerQuiz;
+window.openScene = openScene;
+window.reviewWord = reviewWord;
+</script>
+</body>
+</html>
