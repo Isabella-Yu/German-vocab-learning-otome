@@ -1154,11 +1154,19 @@ body {
 <div class="modal-mask" id="settingsModal">
   <div class="modal">
     <h3>设置</h3>
-    <p>每日目标单词数：当前 <strong id="dailyGoalShow">3</strong> 个</p>
+    <p>每日新词目标：当前 <strong id="dailyGoalShow">3</strong> 个</p>
     <div style="display:flex;gap:8px;margin-bottom:14px">
       <button class="filter-chip" data-goal="3">3 个</button>
       <button class="filter-chip" data-goal="5">5 个</button>
       <button class="filter-chip" data-goal="7">7 个</button>
+    </div>
+    <p>每日复习上限：当前 <strong id="reviewLimitShow">10</strong> 个</p>
+    <p style="font-size:11px;color:var(--text-mute);margin-top:-6px">超过上限时，逾期词优先，其余按掌握度抽样（越熟越少抽）</p>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="filter-chip" data-review="5">5 个</button>
+      <button class="filter-chip" data-review="10">10 个</button>
+      <button class="filter-chip" data-review="15">15 个</button>
+      <button class="filter-chip" data-review="20">20 个</button>
     </div>
     <p style="color:var(--danger);font-size:12px">危险区域：</p>
     <div class="modal-actions">
@@ -1452,7 +1460,7 @@ let state = null;
 
 function defaultState() {
   return {
-    player: { level:1, exp:0, hp:100, maxHp:100, streak:0, lastCheckIn:null, totalLearned:0, dailyGoal:3 },
+    player: { level:1, exp:0, hp:100, maxHp:100, streak:0, lastCheckIn:null, totalLearned:0, dailyGoal:3, dailyReviewLimit:10 },
     character: { affection:0, unlockedScenes:['s0'] },
     words: [], // {id, mastery:0/1/2, learnedDate, lastReview, nextReview, status}
     todayLearned: [], // 今日已学单词id
@@ -1471,9 +1479,9 @@ function loadState() {
       if (!state.player) state = defaultState();
       // 日期切换重置今日记录
       if (state.todayDate !== today()) {
-        // 之前没打卡的词标记逾期
+        // 到期未复习的词标记逾期（基于 nextReview 日期，不限 mastery）
         state.words.forEach(w => {
-          if (w.nextReview && w.nextReview < today() && w.mastery < 2) {
+          if (w.nextReview && w.nextReview < today() && w.status !== 'mastered') {
             w.status = 'overdue';
           }
         });
@@ -1481,6 +1489,8 @@ function loadState() {
         state.todayReviewed = [];
         state.todayDate = today();
       }
+      // 数据迁移：旧数据补全 dailyReviewLimit
+      if (state.player.dailyReviewLimit === undefined) state.player.dailyReviewLimit = 10;
     } else {
       state = defaultState();
       seedSampleData();
@@ -1567,19 +1577,16 @@ function renderHeader() {
 function renderToday() {
   const list = document.getElementById('todayList');
   const items = [];
-  // 今日待复习
-  const reviewDue = state.words.filter(w => (w.status === 'review' || w.status === 'overdue') && !state.todayReviewed.includes(w.id));
+  // 今日待复习（已按概率抽样 + 上限，含 overdue 和 review）
+  const reviewQueue = getTodayReviewWords();
   // 今日待学新词
   const newDue = getTodayNewWords();
-  // 逾期项
-  const overdue = state.words.filter(w => w.status === 'overdue' && !state.todayReviewed.includes(w.id));
+  // 逾期项（从复习队列里挑出 overdue，单独红卡置顶）
+  const overdue = reviewQueue.filter(w => w.status === 'overdue');
+  const reviewLeft = reviewQueue.filter(w => w.status === 'review');
 
-  let totalTasks = 0;
-  let doneTasks = 0;
-
-  // 逾期单词
+  // 逾期单词（红色置顶，每个一个卡片）
   overdue.forEach(w => {
-    totalTasks++;
     const wd = WORD_BANK.find(x => x.id === w.id);
     if (!wd) return;
     items.push(`
@@ -1589,38 +1596,32 @@ function renderToday() {
         </div>
         <div class="today-item-content">
           <div class="today-item-title">复习 ${wd.german}</div>
-          <div class="today-item-desc">昨天未复习的单词</div>
+          <div class="today-item-desc">昨日未复习的单词</div>
         </div>
         <button class="today-item-btn" onclick="goAdventure()">去复习</button>
       </div>
     `);
   });
 
-  // 今日复习任务
-  const reviewLeft = reviewDue.filter(w => w.status === 'review');
+  // 今日复习任务（review 到期的汇总卡片）
   if (reviewLeft.length > 0) {
-    totalTasks++;
-    const done = reviewLeft.length === 0;
-    if (done) doneTasks++;
+    const limit = state.player.dailyReviewLimit || 10;
     items.push(`
-      <div class="today-item ${done?'done':''}">
+      <div class="today-item">
         <div class="today-item-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
         </div>
         <div class="today-item-content">
           <div class="today-item-title">复习旧词</div>
-          <div class="today-item-desc">还有 ${reviewLeft.length} 个单词待复习</div>
+          <div class="today-item-desc">今日抽中 ${reviewLeft.length} 个（上限 ${limit}），已复习 ${state.todayReviewed.length} 个</div>
         </div>
-        ${done?'<button class="today-item-btn" style="background:var(--success)">已完成</button>':'<button class="today-item-btn" onclick="goAdventure()">去复习</button>'}
+        <button class="today-item-btn" onclick="goAdventure()">去复习</button>
       </div>
     `);
   }
 
   // 今日新词任务
-  totalTasks++;
   const newDone = newDue.length === 0 || state.todayLearned.length >= state.player.dailyGoal;
-  if (newDone) doneTasks++;
-  const newLeft = Math.max(0, state.player.dailyGoal - state.todayLearned.length);
   items.push(`
     <div class="today-item ${newDone?'done':''}">
       <div class="today-item-icon">
@@ -1649,7 +1650,7 @@ function renderToday() {
     `);
   }
 
-  document.getElementById('todayCount').textContent = `${doneTasks}/${totalTasks} 完成`;
+  document.getElementById('todayCount').textContent = `复习 ${state.todayReviewed.length} · 新词 ${state.todayLearned.length}`;
   list.innerHTML = items.join('') || '<div class="empty-hint">今日任务已全部完成，去休息吧 ✨</div>';
 }
 
@@ -1658,9 +1659,51 @@ function getTodayNewWords() {
   return WORD_BANK.filter(w => !learned.includes(w.id)).slice(0, state.player.dailyGoal - state.todayLearned.length);
 }
 
+// 今日待复习单词（带概率抽样 + 上限）
+// 策略：overdue 优先全纳入 → 到期 review 词按 mastery 权重抽样 → 总数不超上限
+// 权重：mastery 0(生疏)=1.0，mastery 1(熟悉)=0.5，mastery 2(精通)=0.2
+// 学得越熟的词，越不容易被抽中复习，避免重复劳动
+function getTodayReviewWords() {
+  const limit = state.player.dailyReviewLimit || 10;
+  const t = today();
+  // 所有到期待复习的词（不在今日已复习里，且 nextReview 已到或逾期）
+  // 额外排除今天刚学的新词（learnedDate===today），防止当天学完立刻复习
+  const due = state.words.filter(w =>
+    !state.todayReviewed.includes(w.id) &&
+    w.learnedDate !== t &&
+    w.status !== 'mastered' &&
+    ((w.status === 'overdue') || (w.status === 'review' && w.nextReview && w.nextReview <= t))
+  );
+  if (due.length <= limit) return due;
+
+  // 超过上限：overdue 优先纳入，剩余名额给到期 review 词做加权抽样
+  const overdue = due.filter(w => w.status === 'overdue');
+  const reviewDue = due.filter(w => w.status === 'review');
+  const picked = overdue.slice(0, limit);
+  const remain = limit - picked.length;
+  if (remain <= 0) return picked;
+  if (reviewDue.length <= remain) return [...picked, ...reviewDue];
+
+  // 按 mastery 权重不放回抽样
+  const weightOf = m => m === 0 ? 1.0 : (m === 1 ? 0.5 : 0.2);
+  const pool = reviewDue.slice();
+  while (picked.length < limit && pool.length > 0) {
+    let totalW = pool.reduce((s, w) => s + weightOf(w.mastery), 0);
+    if (totalW <= 0) { picked.push(pool.shift()); continue; }
+    let r = Math.random() * totalW;
+    let idx = pool.length - 1; // 浮点兜底
+    for (let i = 0; i < pool.length; i++) {
+      r -= weightOf(pool[i].mastery);
+      if (r <= 0) { idx = i; break; }
+    }
+    picked.push(pool.splice(idx, 1)[0]);
+  }
+  return picked;
+}
+
 function renderWordQueue() {
   const queue = document.getElementById('wordQueue');
-  const reviewDue = state.words.filter(w => (w.status === 'review' || w.status === 'overdue') && !state.todayReviewed.includes(w.id));
+  const reviewDue = getTodayReviewWords();
   const newDue = getTodayNewWords();
   const total = reviewDue.length + newDue.length;
   let html = '';
@@ -1716,8 +1759,8 @@ function resetAdventure() {
 }
 
 function startAdventure() {
-  // 构建本次队列：先复习逾期/到期，再学新词
-  const reviewDue = state.words.filter(w => (w.status === 'review' || w.status === 'overdue') && !state.todayReviewed.includes(w.id));
+  // 构建本次队列：先复习逾期/到期（已抽样+上限），再学新词
+  const reviewDue = getTodayReviewWords();
   const newDue = getTodayNewWords();
   adventureQueue = [...reviewDue.map(w => ({...w, _type:'review'})), ...newDue.map(w => ({id:w.id, _type:'new'}))];
 
@@ -1895,16 +1938,19 @@ function nextWord() {
     // 新词加入词库
     let existing = state.words.find(w => w.id === item.id);
     if (!existing) {
+      const tomorrow = new Date(Date.now()+86400000).toISOString().slice(0,10);
       state.words.push({
         id: item.id,
         mastery: lastCorrect ? 1 : 0,
         learnedDate: today(),
         lastReview: today(),
-        nextReview: lastCorrect ? new Date(Date.now()+86400000).toISOString().slice(0,10) : today(),
-        status: lastCorrect ? 'review' : 'overdue'
+        nextReview: tomorrow, // 统一明天再复习，不在当天反复折磨
+        status: 'review'
       });
       state.player.totalLearned++;
       state.todayLearned.push(item.id);
+      // 关键修复：同时加入 todayReviewed，防止刚学完当天又被抽中复习
+      if (!state.todayReviewed.includes(item.id)) state.todayReviewed.push(item.id);
     }
   } else {
     // 复习
@@ -2258,6 +2304,18 @@ function bindEvents() {
         state.player.dailyGoal = parseInt(b.dataset.goal);
         document.getElementById('dailyGoalShow').textContent = state.player.dailyGoal;
         document.querySelectorAll('[data-goal]').forEach(x => x.classList.toggle('active', x === b));
+        saveState();
+        renderAll();
+      };
+    });
+    // 复习上限
+    document.getElementById('reviewLimitShow').textContent = state.player.dailyReviewLimit || 10;
+    document.querySelectorAll('[data-review]').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.review) === (state.player.dailyReviewLimit || 10));
+      b.onclick = () => {
+        state.player.dailyReviewLimit = parseInt(b.dataset.review);
+        document.getElementById('reviewLimitShow').textContent = state.player.dailyReviewLimit;
+        document.querySelectorAll('[data-review]').forEach(x => x.classList.toggle('active', x === b));
         saveState();
         renderAll();
       };
