@@ -1123,6 +1123,15 @@ body {
         <span class="count" id="sceneCount"></span>
       </div>
       <div class="scene-list" id="sceneList"></div>
+
+      <!-- 时节回忆录 -->
+      <div id="seasonalAlert"></div>
+      <div class="section-title" style="margin-top:18px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        时节回忆录
+        <span class="count" id="seasonalCount"></span>
+      </div>
+      <div class="scene-list" id="seasonalList"></div>
     </div>
   </div>
 
@@ -1436,7 +1445,51 @@ const SCENES = [
     de:'"Für immer und ewig. Du bist mein Stern." ——永远与永恒。你是我的星辰。' },
 ];
 
-// 玩家称号
+// ============ 时节回忆录：按现实日期触发的可收集片段 ============
+// 农历节日公历对照（已查证 2026-2028）
+const LUNAR_DATES = {
+  qixi: ['2026-08-19', '2027-08-08', '2028-08-26'],      // 七夕
+  midautumn: ['2026-09-25', '2027-09-15', '2028-10-03'],  // 中秋
+  dongzhi: ['2026-12-22', '2027-12-22', '2028-12-21'],    // 冬至
+};
+const SEASONAL_SCENES = [
+  {
+    id: 'bday', name: '诞辰之星', tag: '你的生日 · 8月6日', priority: 10,
+    match: (d) => d.slice(5) === '08-06',
+    content: '你推开塔顶的门，平日清冷的星象台被无数浮空烛火照亮。莱纳站在中央，手里捧着一枚缀着蓝宝石的星形吊坠——比誓约那枚更小，更贴近心口。"在被星辰召唤之前，你在另一个世界也有诞辰吧？"他单膝跪地，将吊坠为你戴上，"今天，整个星辰语学院都为你而亮。"',
+    de: '"Alles Gute zum Geburtstag. Möge jedes deiner Worte ein Stern sein." ——生日快乐。愿你说的每一个字，都是一颗星。'
+  },
+  {
+    id: 'summer', name: '夏夜萤火', tag: '盛夏限定 · 7-8月', priority: 3,
+    match: (d) => { const m = parseInt(d.slice(5,7)); return m===7 || m===8; },
+    content: '盛夏的学院花园里，萤火虫在紫阳花丛间明灭。莱纳难得地解下铠甲外袍，只着白衬衫坐在长椅上。"过来坐。"他拍了拍身侧，"萤火虫只亲近安静的人——而你今天，足够安静。"',
+    de: '"Die Sommerabende hier sind still. Aber mit dir wird selbst die Stille schön." ——这里的夏夜很静。但有你，连寂静都变得美。'
+  },
+  {
+    id: 'qixi', name: '七夕星河', tag: '农历七月初七', priority: 8,
+    match: (d) => LUNAR_DATES.qixi.includes(d),
+    content: '莱纳翻着一本东方星图册，指着银河两侧的两颗星。"我听说，在你的世界，今夜是牛郎织女鹊桥相会的日子。"他合上书，望向真实的银河，"这里没有银河阻隔——只要你想见，我就在桥的这一端。"',
+    de: '"Über Brücken aus Sternen können wir uns immer finden." ——凭借星辰之桥，我们总能找到彼此。'
+  },
+  {
+    id: 'midautumn', name: '中秋赏月', tag: '农历八月十五', priority: 8,
+    match: (d) => LUNAR_DATES.midautumn.includes(d),
+    content: '月圆之夜，莱纳端出一块甜糕，掰成两半递给你。"你们叫它月饼，对吗？"月光在他银发上镀了一层霜色，他望向满月，"圆月意味着团圆。今夜，你不必召唤——我已在你身侧。"',
+    de: '"Der Mond ist voll, und mein Herz ebenfalls." ——月圆了，我的心也满了。'
+  },
+  {
+    id: 'dongzhi', name: '冬至炉火', tag: '冬至', priority: 7,
+    match: (d) => LUNAR_DATES.dongzhi.includes(d),
+    content: '窗外大雪纷飞，学院壁炉里的火烧得正旺。莱纳将自己的斗篷披在你肩上，"冬天最适合咒语咏唱——因为每个词都带着温度。"他往炉火里添了根柴，"但今夜，你可以只取暖，不学习。"',
+    de: '"Im Winter sind Worte wärmend. Doch heute darfst du einfach ruhen." ——冬天的话语是温暖的。但今天，你可以只休息。'
+  },
+  {
+    id: 'newyear', name: '新年钟声', tag: '元旦 · 1月1日', priority: 9,
+    match: (d) => d.slice(5) === '01-01',
+    content: '零点的钟声敲响时，莱纳单膝跪地，行了标准的骑士礼。"新的一年，请继续让我做你的引导骑士。"他抬起头，眼底映着窗外绽放的星辉烟花，"也请继续，教我你们世界里那些温暖的词。"',
+    de: '"Ein frohes neues Jahr. Möge dieses Jahr so hell sein wie deine Sterne." ——新年快乐。愿这一年如你的星辰般明亮。'
+  },
+];
 const TITLES = [
   { lv:1, name:'见习咒文士' },
   { lv:3, name:'星辰学徒' },
@@ -1462,6 +1515,7 @@ function defaultState() {
   return {
     player: { level:1, exp:0, hp:100, maxHp:100, streak:0, lastCheckIn:null, totalLearned:0, dailyGoal:3, dailyReviewLimit:10 },
     character: { affection:0, unlockedScenes:['s0'] },
+    collectedSeasonal: [], // 已收集的时节片段 id
     words: [], // {id, mastery:0/1/2, learnedDate, lastReview, nextReview, status}
     todayLearned: [], // 今日已学单词id
     todayReviewed: [], // 今日已复习单词id
@@ -1491,6 +1545,8 @@ function loadState() {
       }
       // 数据迁移：旧数据补全 dailyReviewLimit
       if (state.player.dailyReviewLimit === undefined) state.player.dailyReviewLimit = 10;
+      // 数据迁移：补全 collectedSeasonal
+      if (!state.collectedSeasonal) state.collectedSeasonal = [];
     } else {
       state = defaultState();
       seedSampleData();
@@ -2111,6 +2167,56 @@ function renderCharacter() {
     `;
   }).join('');
   document.getElementById('sceneCount').textContent = `${unlockedCount}/${SCENES.length}`;
+
+  // === 时节回忆录 ===
+  const t = today();
+  const todaySeasonal = SEASONAL_SCENES.filter(s => s.match(t)).sort((a,b) => b.priority - a.priority);
+  const alertBox = document.getElementById('seasonalAlert');
+  const uncollectedToday = todaySeasonal.filter(s => !state.collectedSeasonal.includes(s.id));
+  if (uncollectedToday.length > 0) {
+    const s = uncollectedToday[0];
+    alertBox.innerHTML = `
+      <div class="today-item" style="border-left-color:var(--gold);background:rgba(246,224,94,0.1);margin:14px 0;cursor:pointer" onclick="openSeasonalScene('${s.id}')">
+        <div class="today-item-icon" style="background:rgba(246,224,94,0.2);color:var(--gold)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="today-item-content">
+          <div class="today-item-title" style="color:var(--gold)">★ 今日时节片段：${s.name}</div>
+          <div class="today-item-desc">${s.tag} · 点击收集</div>
+        </div>
+        <button class="today-item-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#2d1b4e">查看</button>
+      </div>
+    `;
+  } else {
+    alertBox.innerHTML = '';
+  }
+
+  const sList = document.getElementById('seasonalList');
+  let collectedCount = 0;
+  sList.innerHTML = SEASONAL_SCENES.map(s => {
+    const collected = state.collectedSeasonal.includes(s.id);
+    const available = s.match(t);
+    if (collected) collectedCount++;
+    const canView = collected || available;
+    const highlight = available && !collected;
+    return `
+      <div class="scene-item ${collected?'unlocked':'locked'}" ${canView?`onclick="openSeasonalScene('${s.id}')"`:''} style="${highlight?'border-color:var(--gold);box-shadow:0 0 12px rgba(246,224,94,0.3)':''}">
+        <div class="scene-icon-sm" style="${highlight?'background:rgba(246,224,94,0.2);color:var(--gold)':''}">
+          ${collected
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
+            : available
+              ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+          }
+        </div>
+        <div class="scene-info">
+          <div class="scene-name">${collected ? s.name : (available ? s.name : '？？？')}</div>
+          <div class="scene-req">${collected ? '已收集' : (available ? '今日可收集' : s.tag)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('seasonalCount').textContent = `${collectedCount}/${SEASONAL_SCENES.length}`;
 }
 
 function openScene(id) {
@@ -2122,6 +2228,26 @@ function openScene(id) {
     <div class="scene-de">${s.de}</div>
   `;
   document.getElementById('sceneModal').classList.add('show');
+}
+
+function openSeasonalScene(id) {
+  const s = SEASONAL_SCENES.find(x => x.id === id);
+  if (!s) return;
+  // 收集（首次查看时自动收入回忆录）
+  const isFirst = !state.collectedSeasonal.includes(id);
+  if (isFirst) {
+    state.collectedSeasonal.push(id);
+    saveState();
+    toast(`✦ 收集时节片段：${s.name}`, 'success');
+  }
+  document.getElementById('sceneModalTitle').textContent = s.name + (isFirst ? ' · 新收集' : '');
+  document.getElementById('sceneModalContent').innerHTML = `
+    <p style="color:var(--gold);font-size:12px;margin-bottom:8px;letter-spacing:1px">${s.tag}</p>
+    <p>${s.content}</p>
+    <div class="scene-de">${s.de}</div>
+  `;
+  document.getElementById('sceneModal').classList.add('show');
+  renderCharacter();
 }
 
 // ============ 图鉴 ============
@@ -2376,6 +2502,7 @@ window.switchTab = switchTab;
 window.speakWord = speakWord;
 window.answerQuiz = answerQuiz;
 window.openScene = openScene;
+window.openSeasonalScene = openSeasonalScene;
 window.reviewWord = reviewWord;
 </script>
 </body>
