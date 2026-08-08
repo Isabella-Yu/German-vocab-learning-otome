@@ -1533,10 +1533,18 @@ function loadState() {
       if (!state.player) state = defaultState();
       // 日期切换重置今日记录
       if (state.todayDate !== today()) {
-        // 到期未复习的词标记逾期（基于 nextReview 日期，不限 mastery）
-        state.words.forEach(w => {
-          if (w.nextReview && w.nextReview < today() && w.status !== 'mastered') {
+        // 到期未复习的词标记逾期，但限制数量防止积压雪崩：
+        // 只保留最近 limit*2 个为 overdue（按到期时间从近到远），
+        // 更早积压的直接降级为普通复习（今天到期），避免"全部重新学一遍"
+        const dueWords = state.words.filter(w => w.nextReview && w.nextReview < today() && w.status !== 'mastered');
+        dueWords.sort((a,b) => (a.nextReview < b.nextReview) ? 1 : -1); // 最近到期在前
+        const cap = (state.player.dailyReviewLimit || 10) * 2;
+        dueWords.forEach((w, i) => {
+          if (i < cap) {
             w.status = 'overdue';
+          } else {
+            w.status = 'review';
+            w.nextReview = today();
           }
         });
         state.todayLearned = [];
@@ -1547,6 +1555,16 @@ function loadState() {
       if (state.player.dailyReviewLimit === undefined) state.player.dailyReviewLimit = 10;
       // 数据迁移：补全 collectedSeasonal
       if (!state.collectedSeasonal) state.collectedSeasonal = [];
+      // 一次性修复：overdue 数量封顶，防止历史积压雪崩（幂等，超了才处理）
+      const ovCap = (state.player.dailyReviewLimit || 10) * 2;
+      const overdueAll = state.words.filter(w => w.status === 'overdue');
+      if (overdueAll.length > ovCap) {
+        overdueAll.sort((a,b) => (a.nextReview < b.nextReview) ? 1 : -1); // 最近到期在前
+        overdueAll.slice(ovCap).forEach(w => {
+          w.status = 'review';
+          w.nextReview = today();
+        });
+      }
     } else {
       state = defaultState();
       seedSampleData();
@@ -1715,9 +1733,9 @@ function getTodayNewWords() {
   return WORD_BANK.filter(w => !learned.includes(w.id)).slice(0, state.player.dailyGoal - state.todayLearned.length);
 }
 
-// 今日待复习单词（带概率抽样 + 上限）
-// 策略：overdue 优先全纳入 → 到期 review 词按 mastery 权重抽样 → 总数不超上限
-// 权重：mastery 0(生疏)=1.0，mastery 1(熟悉)=0.5，mastery 2(精通)=0.2
+// 今日待复习单词（严格限额 + 加权抽样）
+// 策略：所有到期词一起按权重抽签，每天严格不超过上限
+// 权重：overdue=3.0（逾期优先但非必抽）｜mastery 0=1.0｜mastery 1=0.5｜mastery 2=0.2
 // 学得越熟的词，越不容易被抽中复习，避免重复劳动
 function getTodayReviewWords() {
   const limit = state.player.dailyReviewLimit || 10;
@@ -1732,24 +1750,21 @@ function getTodayReviewWords() {
   );
   if (due.length <= limit) return due;
 
-  // 超过上限：overdue 优先纳入，剩余名额给到期 review 词做加权抽样
-  const overdue = due.filter(w => w.status === 'overdue');
-  const reviewDue = due.filter(w => w.status === 'review');
-  const picked = overdue.slice(0, limit);
-  const remain = limit - picked.length;
-  if (remain <= 0) return picked;
-  if (reviewDue.length <= remain) return [...picked, ...reviewDue];
-
-  // 按 mastery 权重不放回抽样
-  const weightOf = m => m === 0 ? 1.0 : (m === 1 ? 0.5 : 0.2);
-  const pool = reviewDue.slice();
+  // 超过上限：统一加权不放回抽样（overdue 权重高，但不是必抽，避免逾期积压雪崩）
+  const weightOf = w => {
+    if (w.status === 'overdue') return 3.0;
+    const m = w.mastery || 0;
+    return m === 0 ? 1.0 : (m === 1 ? 0.5 : 0.2);
+  };
+  const pool = due.slice();
+  const picked = [];
   while (picked.length < limit && pool.length > 0) {
-    let totalW = pool.reduce((s, w) => s + weightOf(w.mastery), 0);
+    let totalW = pool.reduce((s, w) => s + weightOf(w), 0);
     if (totalW <= 0) { picked.push(pool.shift()); continue; }
     let r = Math.random() * totalW;
     let idx = pool.length - 1; // 浮点兜底
     for (let i = 0; i < pool.length; i++) {
-      r -= weightOf(pool[i].mastery);
+      r -= weightOf(pool[i]);
       if (r <= 0) { idx = i; break; }
     }
     picked.push(pool.splice(idx, 1)[0]);
@@ -2009,13 +2024,15 @@ function nextWord() {
       if (!state.todayReviewed.includes(item.id)) state.todayReviewed.push(item.id);
     }
   } else {
-    // 复习
+    // 复习（间隔重复：掌握度越高，下次间隔越长）
     let existing = state.words.find(w => w.id === item.id);
     if (existing) {
       existing.lastReview = today();
       if (lastCorrect) {
+        // mastery 0→1：明天再确认一次；1→2：3天后；2 保持：7天后
+        const days = existing.mastery === 0 ? 1 : (existing.mastery === 1 ? 3 : 7);
         existing.mastery = Math.min(2, existing.mastery + 1);
-        existing.nextReview = new Date(Date.now() + (existing.mastery >= 2 ? 3*86400000 : 86400000)).toISOString().slice(0,10);
+        existing.nextReview = new Date(Date.now() + days*86400000).toISOString().slice(0,10);
         existing.status = 'review';
       } else {
         existing.mastery = Math.max(0, existing.mastery - 1);
