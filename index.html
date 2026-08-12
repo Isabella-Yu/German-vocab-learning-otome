@@ -1519,6 +1519,7 @@ function defaultState() {
     words: [], // {id, mastery:0/1/2, learnedDate, lastReview, nextReview, status}
     todayLearned: [], // 今日已学单词id
     todayReviewed: [], // 今日已复习单词id
+    todayReviewIds: [], // 今日固定复习队列（当天第一次抽签后不再变动，避免 UI 反复换词）
     todayDate: today(),
     isNewUser: true,
   };
@@ -1549,12 +1550,15 @@ function loadState() {
         });
         state.todayLearned = [];
         state.todayReviewed = [];
+        state.todayReviewIds = [];
         state.todayDate = today();
       }
       // 数据迁移：旧数据补全 dailyReviewLimit
       if (state.player.dailyReviewLimit === undefined) state.player.dailyReviewLimit = 10;
       // 数据迁移：补全 collectedSeasonal
       if (!state.collectedSeasonal) state.collectedSeasonal = [];
+      // 数据迁移：补全 todayReviewIds
+      if (!state.todayReviewIds) state.todayReviewIds = [];
       // 一次性修复：overdue 数量封顶，防止历史积压雪崩（幂等，超了才处理）
       const ovCap = (state.player.dailyReviewLimit || 10) * 2;
       const overdueAll = state.words.filter(w => w.status === 'overdue');
@@ -1659,8 +1663,9 @@ function renderToday() {
   const overdue = reviewQueue.filter(w => w.status === 'overdue');
   const reviewLeft = reviewQueue.filter(w => w.status === 'review');
 
-  // 逾期单词（红色置顶，每个一个卡片）
-  overdue.forEach(w => {
+  // 逾期单词（红色置顶；超过3个只展示前3个，其余合并计数避免刷屏）
+  const overdueShow = overdue.slice(0, 3);
+  overdueShow.forEach(w => {
     const wd = WORD_BANK.find(x => x.id === w.id);
     if (!wd) return;
     items.push(`
@@ -1676,9 +1681,23 @@ function renderToday() {
       </div>
     `);
   });
+  if (overdue.length > 3) {
+    items.push(`
+      <div class="today-item overdue">
+        <div class="today-item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="today-item-content">
+          <div class="today-item-title">还有 ${overdue.length - 3} 个逾期单词</div>
+          <div class="today-item-desc">进入冒险一起复习</div>
+        </div>
+        <button class="today-item-btn" onclick="goAdventure()">去复习</button>
+      </div>
+    `);
+  }
 
-  // 今日复习任务（review 到期的汇总卡片）
-  if (reviewLeft.length > 0) {
+  // 今日复习任务（汇总卡片）
+  if (reviewQueue.length > 0) {
     const limit = state.player.dailyReviewLimit || 10;
     items.push(`
       <div class="today-item">
@@ -1687,7 +1706,7 @@ function renderToday() {
         </div>
         <div class="today-item-content">
           <div class="today-item-title">复习旧词</div>
-          <div class="today-item-desc">今日抽中 ${reviewLeft.length} 个（上限 ${limit}），已复习 ${state.todayReviewed.length} 个</div>
+          <div class="today-item-desc">今日待复习 ${reviewQueue.length} 个（上限 ${limit}）· 已复习 ${state.todayReviewed.length} 个</div>
         </div>
         <button class="today-item-btn" onclick="goAdventure()">去复习</button>
       </div>
@@ -1733,43 +1752,57 @@ function getTodayNewWords() {
   return WORD_BANK.filter(w => !learned.includes(w.id)).slice(0, state.player.dailyGoal - state.todayLearned.length);
 }
 
-// 今日待复习单词（严格限额 + 加权抽样）
-// 策略：所有到期词一起按权重抽签，每天严格不超过上限
+// 今日待复习单词（严格限额 + 加权抽样 + 当天固定队列）
+// 关键设计：当天第一次调用时抽签一次并固定（todayReviewIds），
+// 之后所有渲染都返回同一批词（排除已复习的），避免 UI 反复换词、"越做越多"
 // 权重：overdue=3.0（逾期优先但非必抽）｜mastery 0=1.0｜mastery 1=0.5｜mastery 2=0.2
-// 学得越熟的词，越不容易被抽中复习，避免重复劳动
 function getTodayReviewWords() {
   const limit = state.player.dailyReviewLimit || 10;
   const t = today();
-  // 所有到期待复习的词（不在今日已复习里，且 nextReview 已到或逾期）
-  // 额外排除今天刚学的新词（learnedDate===today），防止当天学完立刻复习
-  const due = state.words.filter(w =>
-    !state.todayReviewed.includes(w.id) &&
-    w.learnedDate !== t &&
-    w.status !== 'mastered' &&
-    ((w.status === 'overdue') || (w.status === 'review' && w.nextReview && w.nextReview <= t))
-  );
-  if (due.length <= limit) return due;
+  if (!state.todayReviewIds) state.todayReviewIds = [];
 
-  // 超过上限：统一加权不放回抽样（overdue 权重高，但不是必抽，避免逾期积压雪崩）
-  const weightOf = w => {
-    if (w.status === 'overdue') return 3.0;
-    const m = w.mastery || 0;
-    return m === 0 ? 1.0 : (m === 1 ? 0.5 : 0.2);
-  };
-  const pool = due.slice();
-  const picked = [];
-  while (picked.length < limit && pool.length > 0) {
-    let totalW = pool.reduce((s, w) => s + weightOf(w), 0);
-    if (totalW <= 0) { picked.push(pool.shift()); continue; }
-    let r = Math.random() * totalW;
-    let idx = pool.length - 1; // 浮点兜底
-    for (let i = 0; i < pool.length; i++) {
-      r -= weightOf(pool[i]);
-      if (r <= 0) { idx = i; break; }
+  // 当天第一次：抽签并固定队列
+  if (state.todayReviewIds.length === 0) {
+    // 所有到期待复习的词（排除今天刚学的新词 + 今天已复习的）
+    const due = state.words.filter(w =>
+      !state.todayReviewed.includes(w.id) &&
+      w.learnedDate !== t &&
+      w.status !== 'mastered' &&
+      ((w.status === 'overdue') || (w.status === 'review' && w.nextReview && w.nextReview <= t))
+    );
+    // 今日剩余配额（迁移当天今天已复习过几个，就只补足到上限，不超量）
+    const quota = Math.max(0, limit - state.todayReviewed.length);
+    if (due.length <= quota) {
+      state.todayReviewIds = due.map(w => w.id);
+    } else if (quota > 0) {
+      // 超过上限：统一加权不放回抽样（overdue 权重高，但不是必抽，避免逾期积压雪崩）
+      const weightOf = w => {
+        if (w.status === 'overdue') return 3.0;
+        const m = w.mastery || 0;
+        return m === 0 ? 1.0 : (m === 1 ? 0.5 : 0.2);
+      };
+      const pool = due.slice();
+      const picked = [];
+      while (picked.length < quota && pool.length > 0) {
+        let totalW = pool.reduce((s, w) => s + weightOf(w), 0);
+        if (totalW <= 0) { picked.push(pool.shift()); continue; }
+        let r = Math.random() * totalW;
+        let idx = pool.length - 1; // 浮点兜底
+        for (let i = 0; i < pool.length; i++) {
+          r -= weightOf(pool[i]);
+          if (r <= 0) { idx = i; break; }
+        }
+        picked.push(pool.splice(idx, 1)[0]);
+      }
+      state.todayReviewIds = picked.map(w => w.id);
     }
-    picked.push(pool.splice(idx, 1)[0]);
+    saveState();
   }
-  return picked;
+
+  // 返回固定队列中尚未复习的词
+  return state.todayReviewIds
+    .map(id => state.words.find(w => w.id === id))
+    .filter(w => w && !state.todayReviewed.includes(w.id));
 }
 
 function renderWordQueue() {
